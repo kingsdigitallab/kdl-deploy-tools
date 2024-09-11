@@ -105,6 +105,15 @@ def action_redirect(parser):
             content = re.sub(r'\{\{\s*REDIRECT_URL\s*\}\}', r_to, REDIRECT_TEMPLATE)
             path.write_text(content)
 
+def action_noindex(parser):
+    '''Remove /index.html from all hyperlinks.'''
+    from pathlib import Path
+    for p in Path(COPY_PATH).glob('**/*.html'):
+        content = p.read_text()
+        content_new = re.sub(r'(href\s*=\s*"[^"]*/)index\.html\b', r'\1', content)
+        if content_new != content:
+            p.write_text(content_new)
+
 def _run_command(*args, out_path='stdout.log', err_path='stderr.log'):
     import subprocess
 
