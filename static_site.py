@@ -6,6 +6,7 @@ import argparse
 from pathlib import Path
 import re
 
+SERVER_PORT = '8000'
 COPY_PATH = 'html'
 LOG_FILENAME = 'copy.log'
 REDIRECT_TEMPLATE = '''
@@ -67,16 +68,14 @@ def action_copy(parser):
     res = _run_command(
         'wget',
         '--mirror',
-        '--convert-links', 
+        '--convert-links',
         '--adjust-extension',
-        '--page-requisites', 
-        '--no-parent', 
+        '--page-requisites',
+        '--no-parent',
         '-P', COPY_PATH, 
         '-nH', parser.url,
-        out_path='copy_out.log', 
         err_path=LOG_FILENAME
     )
-    print(res)
 
 def _error(message):
     print(f'ERROR: {message}')
@@ -84,7 +83,7 @@ def _error(message):
 
 def action_report(parser):
     '''Report errors found during last copy.'''
-    errors, redirects = _parse_wget_log()
+    errors, redirects = _parse_copy_log()
 
     for code, issues in errors.items():
         for url in sorted(list(issues.keys())):
@@ -93,9 +92,21 @@ def action_report(parser):
     for r_from, r_to in redirects.items():
         print(f'->\t{r_from}\t{r_to}')
 
+    root_url = _read_root_url()
+
+    for p in Path(COPY_PATH).glob('**/*.html'):
+        content = p.read_text()
+        if re.search(r'\bindex\.html\b', content):
+            print(f'"index.html" in {p}')
+        if root_url in content:
+            print(f'domain "{root_url}" hard-coded in {p}')
+        if re.search(r'<link\b[^>]+\bhref="http', content):
+            print(f'external <link> in {p}')
+            
+
 def action_redirect(parser):
     '''Write redirect pages under 'html'.'''
-    errors, redirects = _parse_wget_log()
+    errors, redirects = _parse_copy_log()
 
     for r_from, r_to in redirects.items():
         print(f'->\t{r_from}\t{r_to}')
@@ -105,26 +116,53 @@ def action_redirect(parser):
             content = re.sub(r'\{\{\s*REDIRECT_URL\s*\}\}', r_to, REDIRECT_TEMPLATE)
             path.write_text(content)
 
-def action_noindex(parser):
-    '''Remove /index.html from all hyperlinks.'''
-    from pathlib import Path
+def action_relink(parser):
+    '''Improve hyperlinks. Remove /index.html and domain from internal links.'''
+    base_url = _read_root_url()
     for p in Path(COPY_PATH).glob('**/*.html'):
         content = p.read_text()
-        content_new = re.sub(r'(href\s*=\s*"[^"]*/)index\.html\b', r'\1', content)
+        content_new = re.sub(
+            r'(\s(?:src|href)\s*=\s*")([^"#?]+)',
+            lambda m: _relink(m, base_url),
+            content
+        )
         if content_new != content:
             p.write_text(content_new)
+            print(f'UPDATED {str(p)}')
 
-def _run_command(*args, out_path='stdout.log', err_path='stderr.log'):
-    import subprocess
+def _relink(match, base_url):
+    '''Remove /index.html and domain from internal links
+    e.g. href="https//mysite.com/a/b/index.html?q=1" 
+    => href="/a/b/?q=1" 
+    '''
+    url = match.group(2)
+    # remove hard-coded domain to make the copy more portable
+    url = url.replace(base_url, '/')
+    # remove /index.html if url is internal
+    if not url.startswith('http'):
+        url = url.replace('index.html', '')
+    ret = match.group(1) + url
+    return ret
 
-    with open(out_path, "w") as stdout_file, open(err_path, "w") as stderr_file:
-        process = subprocess.run(
-            args,
-            stdout=stdout_file,
-            stderr=stderr_file
-        )
+def _read_root_url():
+    '''Returns the first URL found at the end of line in the log file'''
+    ret = None
+    with open(LOG_FILENAME, 'r') as f:
+        for line in f:
+            part = line.strip().split()[-1]
+            if part.startswith('http'):
+                ret = part
+                break
+    if ret is None:
+        _error('Could not extract the root URL from the copy log.')
 
-def _parse_wget_log():
+    return ret
+
+def action_serve(parser):
+    '''Locally serves the copy of the site'''
+    _run_command('python3', '-m', 'http.server', '-d', 'html', SERVER_PORT)
+
+def _parse_copy_log():
     '''Parses stderr from GNU Wget 1.21.4.'''
     errors = {}
     redirects = {}
@@ -146,6 +184,26 @@ def _parse_wget_log():
             errors[code][url] = 1
     
     return errors, redirects
+
+def _run_command(*args, out_path=None, err_path=None):
+    import subprocess
+
+    stdout_file = open(out_path, "w") if out_path else None
+    stderr_file = open(err_path, "w") if err_path else None
+    
+    ret = subprocess.run(
+        args,
+        stdout=stdout_file,
+        stderr=stderr_file
+    )
+
+    if stdout_file:
+        stdout_file.close()
+    if stderr_file:
+        stderr_file.close()
+
+
+    return ret
 
 if __name__ == '__main__':
     run_action()
