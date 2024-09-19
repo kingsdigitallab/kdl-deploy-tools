@@ -108,13 +108,17 @@ def action_redirect(parser):
     '''Write redirect pages under 'html'.'''
     errors, redirects = _parse_copy_log()
 
+    root_url = _read_root_url()
     for r_from, r_to in redirects.items():
         print(f'->\t{r_from}\t{r_to}')
 
-        path = Path(re.sub(r'^https?://([^#]+)', r'\1', r_from)) / 'index.html'
+        r_from = re.sub(r'^([^#?]+).*$', r'\1', r_from)
+        path = Path(r_from.replace(root_url, COPY_PATH + '/')) / 'index.html'
         if path.exists():
             content = re.sub(r'\{\{\s*REDIRECT_URL\s*\}\}', r_to, REDIRECT_TEMPLATE)
             path.write_text(content)
+        else:
+            print(f'WARNING: "{path}" not found')
 
 def action_relink(parser):
     '''Improve hyperlinks. Remove /index.html and domain from internal links.'''
