@@ -70,7 +70,10 @@ def action_copy(parser):
     res = _run_command(
         'wget',
         '--mirror',
-        '--convert-links',
+        # This looks buggy.
+        # 1. it convert #x into index.html#x
+        # 2. or r/index.html#x if r is a redirect!
+        # '--convert-links',
         '--adjust-extension',
         '--page-requisites',
         '--no-parent',
@@ -95,15 +98,25 @@ def action_report(parser):
         print(f'->\t{r_from}\t{r_to}')
 
     root_url = _read_root_url()
+    root_domain = _get_domain_from_url(root_url)
 
     unique_external_links = set()
 
     for p in Path(COPY_PATH).glob('**/*.html'):
         content = p.read_text()
-        if re.search(r'\bindex\.html\b', content):
-            print(f'"index.html" in {p}')
-        if root_url in content:
-            print(f'domain "{root_url}" hard-coded in {p}')
+
+        # get all urls ending in index.html
+        index_urls = re.findall(r'''[/\w.:-]*\bindex\.html\b''', content)
+        # keep only the internal ones
+        index_urls = [
+            url 
+            for url in index_urls
+            if _get_domain_from_url(url) in ['', root_domain]
+        ]
+        if index_urls:
+            print(f'index.html found {len(index_urls)} in {p}')
+        if root_domain in content:
+            print(f'domain "{root_domain}" hard-coded in {p}')
         absolute_paths = re.findall(r'(src|href|action)\s*=\s*"/[^/]', content)
         if absolute_paths:
             print(f'{len(absolute_paths)} absolute paths found in @src, @href or @action. {p}')
@@ -141,20 +154,21 @@ def action_redirect(parser):
             path.write_text(content)
 
 def action_relink(parser):
-    '''Improve hyperlinks. Remove /index.html and domain from internal links.'''
+    '''Improve hyperlinks. Remove /index.html & domain from internal links. Make paths relative.'''
     base_url = _read_root_url()
     for p in Path(COPY_PATH).glob('**/*.html'):
+        depth = len(p.relative_to(COPY_PATH).parents) - 1
         content = p.read_text()
         content_new = re.sub(
             r'(\s(?:src|href|action)\s*=\s*")([^"#?]+)',
-            lambda m: _relink(m, base_url),
+            lambda m: _relink(m, base_url, depth),
             content
         )
         if content_new != content:
             p.write_text(content_new)
             print(f'UPDATED {str(p)}')
 
-def _relink(match, base_url):
+def _relink(match, base_url, depth):
     '''Remove /index.html and domain from internal links
     e.g. href="https//mysite.com/a/b/index.html?q=1" 
     => href="/a/b/?q=1" 
@@ -162,11 +176,21 @@ def _relink(match, base_url):
     url = match.group(2)
     # remove hard-coded domain to make the copy more portable
     url = url.replace(base_url, '/')
-    # remove /index.html if url is internal
-    if not url.startswith('http'):
+
+    if not _get_domain_from_url(url):
+        # remove /index.html if url is internal
         url = url.replace('index.html', '')
+        # convert absolute paths to relative (so site can be hosted on github)
+        # e.g. /x/y/z => ../x/y/z
+        if url.startswith('/'):
+            url = '../' * depth + url[1:]
+
     ret = match.group(1) + url
     return ret
+
+def _get_domain_from_url(url):
+    # return '' if domain is not present in <url>
+    return urllib.parse.urlparse(url).netloc
 
 def _read_root_url():
     '''Returns the first URL found at the end of line in the log file'''
