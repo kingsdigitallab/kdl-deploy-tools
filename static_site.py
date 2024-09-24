@@ -173,7 +173,7 @@ def action_relink(parser):
     for p in paths:
         depth = len(p.relative_to(COPY_PATH).parents) - 1
         content = p.read_text()
-        pattern = r'(\s(?:src|href|action|srcset)\s*=\s*")([^"#?]+)'
+        pattern = r'(\s(?:src|href|action|poster|srcset)\s*=\s*")([^"#?]+)'
         if str(p).endswith('.css'):
             pattern = r'(url\(")([^"#?]+)'
         content_new = re.sub(
