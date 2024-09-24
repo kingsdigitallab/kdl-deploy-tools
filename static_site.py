@@ -4,6 +4,7 @@ Write redirect pages where wget copied the redirected content.
 '''
 import argparse
 from pathlib import Path
+import urllib.parse
 import re
 
 SERVER_PORT = '8000'
@@ -35,6 +36,7 @@ def run_action():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=epilog,
+        description='Create and maintain a copy of a site.'
     )
     
     parser.add_argument("action", help="action to perform", choices=actions.keys())
@@ -94,15 +96,25 @@ def action_report(parser):
 
     root_url = _read_root_url()
 
+    unique_external_links = set()
+
     for p in Path(COPY_PATH).glob('**/*.html'):
         content = p.read_text()
         if re.search(r'\bindex\.html\b', content):
             print(f'"index.html" in {p}')
         if root_url in content:
             print(f'domain "{root_url}" hard-coded in {p}')
-        if re.search(r'<link\b[^>]+\bhref="http', content):
-            print(f'external <link> in {p}')
-            
+        absolute_paths = re.findall(r'(src|href|action)\s*=\s*"/[^/]', content)
+        if absolute_paths:
+            print(f'{len(absolute_paths)} absolute paths found in @src, @href or @action. {p}')
+        
+        external_links = set(re.findall(r'<link\b[^>]+\bhref\s*=\s*"(http[^"]+)', content))
+        new_external_links = external_links.difference(unique_external_links)
+        if new_external_links:
+            # print(external_links)
+            # if re.search(r'<link\b[^>]+\bhref\s*=\s*"(http[^"]+)', content):
+            print(f'{len(new_external_links)} new external <link> in {p}')
+            unique_external_links = unique_external_links.union(new_external_links)
 
 def action_redirect(parser):
     '''Write redirect pages under 'html'.'''
@@ -114,11 +126,19 @@ def action_redirect(parser):
 
         r_from = re.sub(r'^([^#?]+).*$', r'\1', r_from)
         path = Path(r_from.replace(root_url, COPY_PATH + '/')) / 'index.html'
-        if path.exists():
+        found = path.exists()
+        if not found:
+            # try decoding the URL
+            path_decoded = Path(urllib.parse.unquote(str(path)))
+            if path_decoded != path:
+                path = path_decoded
+                found = path.exists() 
+        
+        if not found:
+            print(f'WARNING: "{path}" not found')
+        else:
             content = re.sub(r'\{\{\s*REDIRECT_URL\s*\}\}', r_to, REDIRECT_TEMPLATE)
             path.write_text(content)
-        else:
-            print(f'WARNING: "{path}" not found')
 
 def action_relink(parser):
     '''Improve hyperlinks. Remove /index.html and domain from internal links.'''
@@ -126,7 +146,7 @@ def action_relink(parser):
     for p in Path(COPY_PATH).glob('**/*.html'):
         content = p.read_text()
         content_new = re.sub(
-            r'(\s(?:src|href)\s*=\s*")([^"#?]+)',
+            r'(\s(?:src|href|action)\s*=\s*")([^"#?]+)',
             lambda m: _relink(m, base_url),
             content
         )
@@ -165,6 +185,33 @@ def _read_root_url():
 def action_serve(parser):
     '''Locally serves the copy of the site'''
     _run_command('python3', '-m', 'http.server', '-d', 'html', SERVER_PORT)
+
+def action_tag(parser):
+    '''Tag content for PageFind utility'''
+    # TODO: generalise. At the moment h2 is specific to renskin project.
+    for p in Path(COPY_PATH).glob('**/*.html'):
+        content = p.read_text()
+        content_new = re.sub(
+            r'data-pagefind-\w+(="[^"]*")?',
+            '',
+            content,
+        )
+        if 1:
+            content_new = re.sub(
+                r'<h2\s*',
+                '<h2 data-pagefind-weight="10.0" data-pagefind-meta="title"',
+                content_new,
+                count=1
+            )
+            content_new = re.sub(
+                r'nav"\s*>',
+                'nav" data-pagefind-ignore>',
+                content_new,
+            )
+        if content_new != content:
+            p.write_text(content_new)
+            print(f'UPDATED {str(p)}')
+
 
 def _parse_copy_log():
     '''Parses stderr from GNU Wget 1.21.4.'''
