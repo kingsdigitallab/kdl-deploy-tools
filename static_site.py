@@ -205,10 +205,13 @@ def _relink(match, base_url, depth):
     ret = match.group(1) + url
     return ret
 
-def action_rename():
+def action_rename(parser):
     '''Remove ?... from file names (e.g. x.css?v=5.6.1).'''
-    for p in Path(COPY_PATH).glob('**/*?*'):
-        print(p)
+    for p in Path(COPY_PATH).glob('**/*'):
+        p_new = re.sub(r'\?[^/]*$', '', str(p))
+        if p_new != str(p):
+            print(f'rename {p} into {p_new}')
+            p.rename(p_new)
 
 def _get_domain_from_url(url):
     # return '' if domain is not present in <url>
