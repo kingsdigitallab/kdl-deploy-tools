@@ -102,7 +102,11 @@ def action_report(parser):
 
     unique_external_links = set()
 
-    for p in Path(COPY_PATH).glob('**/*.html'):
+    paths = []
+    for pattern in ['**/*.html', '**/*.css']:
+        paths.extend(Path(COPY_PATH).glob(pattern))
+
+    for p in paths:
         content = p.read_text()
 
         # get all urls ending in index.html
@@ -120,6 +124,11 @@ def action_report(parser):
         absolute_paths = re.findall(r'(src|href|action)\s*=\s*"/[^/]', content)
         if absolute_paths:
             print(f'{len(absolute_paths)} absolute paths found in @src, @href or @action. {p}')
+
+        # in css
+        absolute_paths = re.findall(r'\burl\(\s*"/[^/]', content)
+        if absolute_paths:
+            print(f'{len(absolute_paths)} absolute paths found in url(). {p}')
         
         external_links = set(re.findall(r'<link\b[^>]+\bhref\s*=\s*"(http[^"]+)', content))
         new_external_links = external_links.difference(unique_external_links)
@@ -156,11 +165,19 @@ def action_redirect(parser):
 def action_relink(parser):
     '''Improve hyperlinks. Remove /index.html & domain from internal links. Make paths relative.'''
     base_url = _read_root_url()
-    for p in Path(COPY_PATH).glob('**/*.html'):
+
+    paths = []
+    for pattern in ['**/*.html', '**/*.css']:
+        paths.extend(Path(COPY_PATH).glob(pattern))
+
+    for p in paths:
         depth = len(p.relative_to(COPY_PATH).parents) - 1
         content = p.read_text()
+        pattern = r'(\s(?:src|href|action)\s*=\s*")([^"#?]+)'
+        if str(p).endswith('.css'):
+            pattern = r'(url\(")([^"#?]+)'
         content_new = re.sub(
-            r'(\s(?:src|href|action)\s*=\s*")([^"#?]+)',
+            pattern,
             lambda m: _relink(m, base_url, depth),
             content
         )
@@ -187,6 +204,11 @@ def _relink(match, base_url, depth):
 
     ret = match.group(1) + url
     return ret
+
+def action_rename():
+    '''Remove ?... from file names (e.g. x.css?v=5.6.1).'''
+    for p in Path(COPY_PATH).glob('**/*?*'):
+        print(p)
 
 def _get_domain_from_url(url):
     # return '' if domain is not present in <url>
