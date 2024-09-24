@@ -173,36 +173,45 @@ def action_relink(parser):
     for p in paths:
         depth = len(p.relative_to(COPY_PATH).parents) - 1
         content = p.read_text()
-        pattern = r'(\s(?:src|href|action)\s*=\s*")([^"#?]+)'
+        pattern = r'(\s(?:src|href|action|srcset)\s*=\s*")([^"#?]+)'
         if str(p).endswith('.css'):
             pattern = r'(url\(")([^"#?]+)'
         content_new = re.sub(
             pattern,
-            lambda m: _relink(m, base_url, depth),
+            lambda m: _relink_urls(m, base_url, depth),
             content
         )
         if content_new != content:
             p.write_text(content_new)
             print(f'UPDATED {str(p)}')
 
-def _relink(match, base_url, depth):
+def _relink_urls(match, base_url, depth):
+    # srcset="url1 w h, url2 w h, ..."
+    ret = ','.join([
+        _relink_url(url, base_url, depth)
+        for url 
+        in re.split(r',\s*', match.group(2))
+    ])
+    
+    return match.group(1) + ret
+
+def _relink_url(part, base_url, depth):
     '''Remove /index.html and domain from internal links
     e.g. href="https//mysite.com/a/b/index.html?q=1" 
     => href="/a/b/?q=1" 
     '''
-    url = match.group(2)
+    ret = part
     # remove hard-coded domain to make the copy more portable
-    url = url.replace(base_url, '/')
+    ret = ret.replace(base_url, '/')
 
-    if not _get_domain_from_url(url):
+    if not _get_domain_from_url(ret):
         # remove /index.html if url is internal
-        url = url.replace('index.html', '')
+        ret = ret.replace('index.html', '')
         # convert absolute paths to relative (so site can be hosted on github)
         # e.g. /x/y/z => ../x/y/z
-        if url.startswith('/'):
-            url = '../' * depth + url[1:]
+        if ret.startswith('/'):
+            ret = '../' * depth + ret[1:]
 
-    ret = match.group(1) + url
     return ret
 
 def action_rename(parser):
