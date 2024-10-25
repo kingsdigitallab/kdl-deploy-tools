@@ -21,6 +21,8 @@ This script will email a list of down sites.
 
 It is meant to run a few times a day as a cron job.
 
+Requirements: python 3.5+
+
 **Before running it**, create a config file under `env/uptime.py` with the following parameters:
 
 ```python
