@@ -16,7 +16,6 @@ from email.mime.text import MIMEText
 from env.uptime import EMAIL_SERVER, EMAIL_TO, EMAIL_FROM, UPTIME_API_KEY
 
 
-EMAIL_TO = ','.join(EMAIL_TO)
 UPTIME_API_URL = 'https://api.uptimerobot.com/v2/getMonitors'
 UPTIME_REQUEST_PARAMS = urllib.parse.urlencode({
   'api_key': UPTIME_API_KEY, 
@@ -67,11 +66,11 @@ class Emailer:
 
         msg['Subject'] = title
         msg['From'] = EMAIL_FROM
-        msg['To'] = EMAIL_TO
+        msg['To'] = ', '.join(EMAIL_TO)
 
         # Send the message via our own SMTP server.
         s = smtplib.SMTP(EMAIL_SERVER)
-        s.sendmail(msg['From'], msg['To'], msg.as_string())
+        s.sendmail(msg['From'], EMAIL_TO, msg.as_string())
         s.quit()
 
 LOGGER = Logger()
