@@ -3,7 +3,8 @@ Collection of tools for CI/CD &amp; sustainability
 
 ## Static sites (static_site.py)
 
-This command line python tool can copy a web site to your filesystem (i.e. make it static), report and correct some issues.
+This command line python tool can copy a web site to your filesystem (i.e. make
+it static), report and correct some issues.
 
 Requirements: python 3.10+ and linux-type environment equipped with wget.
 
@@ -23,7 +24,8 @@ It is meant to run a few times a day as a cron job.
 
 Requirements: python 3.5+
 
-**Before running it**, create a config file under `env/uptime.py` with the following parameters:
+**Before running it**, create a config file under `env/uptime.py` with the
+following parameters:
 
 ```python
 EMAIL_SERVER = 'YOUR_SMTP_DOMAIN'
@@ -34,3 +36,12 @@ EMAIL_TO=[
 EMAIL_FROM = 'SENDER'
 UPTIME_API_KEY = 'YOUR_UPTIME_ROBOT_READ_ONLY_API_KEY'
 ```
+
+## Mercurial to Git converter ([hg2git.sh](hg2git.sh))
+
+This script converts a Mercurial repository to a Git repository and preserves
+the commit history.
+
+`./hg2git.sh /path/to/mercurial/repository`
+
+For more information, see the script itself.
