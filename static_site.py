@@ -7,7 +7,7 @@ from pathlib import Path
 import urllib.parse
 import re
 
-SERVER_PORT = '8000'
+SERVER_PORT = '8010'
 COPY_PATH = 'html'
 LOG_FILENAME = 'copy.log'
 REDIRECT_TEMPLATE = '''
@@ -82,6 +82,15 @@ def action_copy(parser):
         err_path=LOG_FILENAME
     )
 
+def action_copy_and_fix(parser):
+    '''Run all actions. Copy a site then fix the copy.'''
+    action_copy(parser)
+    action_dedupe(parser)
+    action_redirect(parser)
+    action_relink(parser)
+    action_rename(parser)
+    action_report(parser)
+
 def _error(message):
     print(f'ERROR: {message}')
     exit(1)
@@ -107,6 +116,9 @@ def action_report(parser):
         paths.extend(Path(COPY_PATH).glob(pattern))
 
     for p in paths:
+        if '?' in str(p):
+            print(f'? in file name {p}')
+
         content = p.read_text()
 
         # get all urls ending in index.html
@@ -138,6 +150,30 @@ def action_report(parser):
             print(f'{len(new_external_links)} new external <link> in {p}')
             unique_external_links = unique_external_links.union(new_external_links)
 
+def action_dedupe(parser):
+    '''Removes a.html if same as a/index.html. Remove query strings from file names '?'.'''
+    for p in Path(COPY_PATH).glob('**/*.html'):
+        # content = p.read_text()
+        if p.name != 'index.html':
+            # case 1, a/index.html
+            p2 = p.parent / p.stem / 'index.html'
+
+            # case 2, ? in file name
+            if '?' in str(p.name):
+                # e.g. html/photos/index.html?phrase=.html
+                p2 = p.parent / re.sub(r'\?.*$', '', p.name)
+
+            # (re)move
+            if p2.exists():
+                if p.read_text() == p2.read_text():
+                    print(f'REMOVED {p}, SAME AS {p2}')
+                    p.unlink()
+                else:
+                    print(f'WARNING: {p} <> {p2}')
+            else:
+                print(f'MOVED {p} to {p2}')
+                p.replace(p2)
+                
 def action_redirect(parser):
     '''Write redirect pages under 'html'.'''
     errors, redirects = _parse_copy_log()
@@ -159,8 +195,10 @@ def action_redirect(parser):
         if not found:
             print(f'WARNING: "{path}" not found')
         else:
+            depth = len(path.relative_to(COPY_PATH).parents) - 1
+            r_to = _relink_url(r_to, root_url, depth)
             content = re.sub(r'\{\{\s*REDIRECT_URL\s*\}\}', r_to, REDIRECT_TEMPLATE)
-            path.write_text(content)
+            ## path.write_text(content)
 
 def action_relink(parser):
     '''Improve hyperlinks. Remove /index.html & domain from internal links. Make paths relative.'''
@@ -310,7 +348,6 @@ def _run_command(*args, out_path=None, err_path=None):
         stdout_file.close()
     if stderr_file:
         stderr_file.close()
-
 
     return ret
 
