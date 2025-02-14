@@ -5,6 +5,10 @@ It generates screenshots of URLs from a CSV file,
 compares them with baseline images, 
 and reports differences in an HTML format.
 
+## Exmaple
+
+![image](https://github.com/user-attachments/assets/14237b69-dcd8-49a6-87d0-ed037ff3c6d3)
+
 ## Usage
 
 1. **Install Dependencies**: Ensure you have Node.js installed. Install the required packages using npm:
