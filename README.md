@@ -1,5 +1,5 @@
 # kdl-deploy-tools
-Collection of tools for CI/CD &amp; sustainability
+Collection of small tools for CI/CD &amp; sustainability
 
 ## Static sites (static_site.py)
 

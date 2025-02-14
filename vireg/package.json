@@ -1,0 +1,21 @@
+{
+  "name": "vireg",
+  "version": "0.1.0",
+  "main": "vireg.mjs",
+  "scripts": {
+    "fetch": "node vireg.mjs fetch",
+    "diff": "node vireg.mjs diff",
+    "report": "node vireg.mjs report",
+    "test": "node vireg.mjs test",
+    "accept": "node vireg.mjs accept",
+    "urls": "node vireg.mjs urls"
+  },
+  "author": "Geoffroy Noël",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "csv-parser": "^3.2.0",
+    "pixelmatch": "^6.0.0",
+    "playwright": "^1.50.1"
+  }
+}
