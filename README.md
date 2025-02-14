@@ -45,3 +45,10 @@ the commit history.
 `./hg2git.sh /path/to/mercurial/repository`
 
 For more information, see the script itself.
+
+## Visual Regression Toolkit (vireg)
+
+This tool is used for visual regression testing. It compares two images and
+reports any differences.
+
+More info in the [README.md file](vireg/README.md).
