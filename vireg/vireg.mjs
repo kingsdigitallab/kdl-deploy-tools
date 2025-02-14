@@ -346,12 +346,12 @@ class VisualRegressionToolkit {
         </style>
       </head>
       <body>
-        <h1>Visual Regression Report</h1>
+        <h1>Visual Regression Report - ${differentPairs} differences found</h1>
         <table>
           <tr>
             <th>URL</th>
             <th>Accepted screenshot</th>
-            <th>Latest chnages</th>
+            <th>Latest changes</th>
             <th>Difference</th>
           </tr>
     `;
