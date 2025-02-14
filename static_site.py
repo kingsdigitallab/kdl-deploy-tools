@@ -198,7 +198,7 @@ def action_redirect(parser):
             depth = len(path.relative_to(COPY_PATH).parents) - 1
             r_to = _relink_url(r_to, root_url, depth)
             content = re.sub(r'\{\{\s*REDIRECT_URL\s*\}\}', r_to, REDIRECT_TEMPLATE)
-            ## path.write_text(content)
+            path.write_text(content)
 
 def action_relink(parser):
     '''Improve hyperlinks. Remove /index.html & domain from internal links. Make paths relative.'''
