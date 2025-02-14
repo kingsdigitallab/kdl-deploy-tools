@@ -341,6 +341,7 @@ class VisualRegressionToolkit {
         <style>
           table { width: 100%; border-collapse: collapse; }
           th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+          td { vertical-align: top; }
           img { max-width: 100%; height: auto; }
         </style>
       </head>
@@ -349,9 +350,9 @@ class VisualRegressionToolkit {
         <table>
           <tr>
             <th>URL</th>
-            <th>Accepted Image</th>
-            <th>Latest Screenshot</th>
-            <th>Difference Image</th>
+            <th>Accepted screenshot</th>
+            <th>Latest chnages</th>
+            <th>Difference</th>
           </tr>
     `;
 
@@ -365,9 +366,9 @@ class VisualRegressionToolkit {
         reportContent += `
           <tr>
             <td><a href="${url}" target="_blank">${url}</a></td>
-            <td><img src="${SCREENSHOTS_BASELINE_PATH}/${validFileName}" alt="Accepted Image"></td>
-            <td><img src="${SCREENSHOTS_LATEST_PATH}/${validFileName}" alt="Latest Screenshot"></td>
-            <td><img src="${SCREENSHOTS_DIFF_PATH}/${validFileName}" alt="Difference Image"></td>
+            <td><img src="${SCREENSHOTS_BASELINE_PATH}/${validFileName}" alt="Accepted screenshot"></td>
+            <td><img src="${SCREENSHOTS_LATEST_PATH}/${validFileName}" alt="Latest changes"></td>
+            <td><img src="${SCREENSHOTS_DIFF_PATH}/${validFileName}" alt="Difference"></td>
           </tr>
         `;
       }
