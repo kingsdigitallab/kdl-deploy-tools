@@ -55,3 +55,7 @@ and reports differences in an HTML format.
 * [playwright](https://github.com/microsoft/playwright): for loading a page in a headless browser and taking screenshots
 * [pixelmatch](https://github.com/mapbox/pixelmatch): for comparing images
 * [csv-parser](https://github.com/mafintosh/csv-parser): for parsing CSV files
+
+## Environment Variables
+
+- `DOMAIN`: The domain to test. If not provided, defaults to 'http://localhost:8082'.
