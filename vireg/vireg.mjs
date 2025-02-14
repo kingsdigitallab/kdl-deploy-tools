@@ -1,8 +1,9 @@
 /*
 TODO:
+* better image comparison that takes text flow into account
+* parametrise DOMAIN
 D screenshots of all urls found in refs.csv
 D screenshot of the full web page length, no truncation
-* better image comparison that takes text flow into account
 D screenshots of urls created from book and page columns in refs
 D report: generate a html with all the differences
 D test: fetch+diff+report
@@ -18,9 +19,10 @@ import {PNG} from 'pngjs';
 import pixelmatch from 'pixelmatch';
 
 // const VIEWPORT = {width: 1920, height: 2000}
-const VIEWPORT = {width: 1280, height: 2000}
-const REFS_PATH = 'refs.csv';
 const DOMAIN = 'http://localhost:8082';
+const VIEWPORT = {width: 1280, height: 2000}
+const URLS_CSV_PATH = 'urls.csv';
+const STYLESHEET_PATH = 'vireg.css'
 const SCREENSHOTS_BASELINE_PATH = 'screenshots/accepted';
 const SCREENSHOTS_LATEST_PATH = 'screenshots/latest';
 const SCREENSHOTS_DIFF_PATH = 'screenshots/diff';
@@ -34,9 +36,11 @@ class VisualRegressionToolkit {
   }
 
   async init() {
-    console.log('Initializing VisualRegressor');
+    console.log('initialisation');
     
     this.urls = await this.readUrls()
+
+    this.styleSheetContent = this.readStyleSheet()
 
     this.browser = await chromium.launch({ headless: true });
     const context = await this.browser.newContext();
@@ -185,18 +189,28 @@ class VisualRegressionToolkit {
   }
 
   async takeScreenshot(url) {
-    console.log(`Screenshot: ${url}`);
-    await this.webPage.goto(url);
     let screenshotPath = SCREENSHOTS_LATEST_PATH + '/' + this.getScreenshotFilenameFromURL(url);
-    console.log(screenshotPath)
+    console.log(`Screenshot: ${url} -> ${screenshotPath}`);
+
+    await this.webPage.goto(url)
     await this.webPage.waitForLoadState('networkidle')
     await this.webPage.waitForLoadState('domcontentloaded')
     await this.webPage.waitForTimeout(10)
+
     await this.webPage.screenshot({ 
       path: screenshotPath, 
       animations: 'disabled', 
-      style: fs.readFileSync(path.join(__dirname, 'screenshot.css')).toString()
+      style: this.styleSheetContent
     });
+  }
+
+  readStyleSheet() {
+    let ret = null
+    if (fs.existsSync(STYLESHEET_PATH)) {
+      ret = fs.readFileSync(STYLESHEET_PATH).toString()
+      console.log(`Found stylesheet (${STYLESHEET_PATH}).`)
+    }
+    return ret;
   }
 
   getScreenshotFilenameFromURL(url) {
@@ -226,7 +240,7 @@ class VisualRegressionToolkit {
 
   async readUrls() {
     let ret = []
-    let rows = await this.readCSVFile(REFS_PATH);
+    let rows = await this.readCSVFile(URLS_CSV_PATH);
     // let row = { 
     //   url: '/{v1}/{v2}/{v3}',
     //   v1: 'a|bb',

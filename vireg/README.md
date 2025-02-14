@@ -12,7 +12,7 @@ and reports differences in an HTML format.
    npm ci
    ```
 
-2. **Configure References**: Update `refs.csv` with URLs to test.
+2. **Configure References**: Update `urls.csv` with URLs to test.
 
 3. **Actions**:
 
@@ -32,7 +32,9 @@ and reports differences in an HTML format.
 
 - Screenshots are saved in `screenshots/latest`, `screenshots/accepted`, and `screenshots/diff`.
 - The script compares images based on pixel differences, ignoring text flow.
-- Remove baseline screenshots before accepting new ones: `node vireg/vireg.mjs accept`.
+- Default browser is Chromium, but in principle Firefox and Safari engines could be used.
+- Default viewport is set to 1080x2000.
+- Add vireg.css to your project to style the pages before screenshots. It is useful to make dynamic (e.g. date) or animated elements invisible so they won't appear as a difference.
 
 ## Dependencies
 
