@@ -12,7 +12,7 @@ and reports differences in an HTML format.
    npm ci
    ```
 
-2. **Configure References**: Update `urls.csv` with URLs to test. Only use webpath, leave out the domain.
+2. **Configure References**: Update `urls.csv` with URLs to test. Only use webpath, leave out the domain. `urls.example.csv` is an example file.
 
 3. **Actions**:
 
@@ -35,8 +35,8 @@ and reports differences in an HTML format.
     2. Then make changes to the site.
     3. Run `npm run test` to take new screenshots and report difference
     4. Open/reload report.html in your browser to see the differences
-    5. If there are any unwanted differences, return to step 2
-    6. Otherwise, if you are happy with the new screenshots, run `npm run accept` to save them as the new baseline.
+    5. If there are any unwanted differences, return to step ii
+    6. Otherwise, if you are happy with the new screenshots, run `npm run accept` to save them as the new baseline
 
 ## Notes
 
