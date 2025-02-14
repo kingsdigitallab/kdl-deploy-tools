@@ -334,6 +334,28 @@ class VisualRegressionToolkit {
   }
 
   async actionReport() {
+    let reportTable = ''
+    let diffCount = 0;
+
+    const diffFiles = new Set(fs.readdirSync(SCREENSHOTS_DIFF_PATH));
+
+    for (let relativeUrl of this.urls) {
+      let url = `${DOMAIN}${relativeUrl}`;
+      const validFileName = this.getScreenshotFilenameFromURL(relativeUrl);
+
+      if (diffFiles.has(`${validFileName}`)) {
+        diffCount++;
+        reportTable += `
+          <tr>
+            <td><a href="${url}" target="_blank">${url}</a></td>
+            <td><img src="${SCREENSHOTS_BASELINE_PATH}/${validFileName}" alt="Accepted screenshot"></td>
+            <td><img src="${SCREENSHOTS_LATEST_PATH}/${validFileName}" alt="Latest changes"></td>
+            <td><img src="${SCREENSHOTS_DIFF_PATH}/${validFileName}" alt="Difference"></td>
+          </tr>
+        `;
+      }
+    }
+
     let reportContent = `
       <html>
       <head>
@@ -346,7 +368,7 @@ class VisualRegressionToolkit {
         </style>
       </head>
       <body>
-        <h1>Visual Regression Report - ${differentPairs} differences found</h1>
+        <h1>Visual Regression Report - ${diffCount} differences found</h1>
         <table>
           <tr>
             <th>URL</th>
@@ -354,27 +376,7 @@ class VisualRegressionToolkit {
             <th>Latest changes</th>
             <th>Difference</th>
           </tr>
-    `;
-
-    const diffFiles = new Set(fs.readdirSync(SCREENSHOTS_DIFF_PATH));
-
-    for (let relativeUrl of this.urls) {
-      let url = `${DOMAIN}${relativeUrl}`;
-      const validFileName = this.getScreenshotFilenameFromURL(relativeUrl);
-
-      if (diffFiles.has(`${validFileName}`)) {
-        reportContent += `
-          <tr>
-            <td><a href="${url}" target="_blank">${url}</a></td>
-            <td><img src="${SCREENSHOTS_BASELINE_PATH}/${validFileName}" alt="Accepted screenshot"></td>
-            <td><img src="${SCREENSHOTS_LATEST_PATH}/${validFileName}" alt="Latest changes"></td>
-            <td><img src="${SCREENSHOTS_DIFF_PATH}/${validFileName}" alt="Difference"></td>
-          </tr>
-        `;
-      }
-    }
-
-    reportContent += `
+          ${reportTable}
         </table>
       </body>
       </html>
