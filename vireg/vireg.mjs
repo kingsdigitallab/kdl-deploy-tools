@@ -66,6 +66,9 @@ class VisualRegressionToolkit {
       await this.init()
 
       switch (action) {
+        case 'init':
+          await this.actionInit();
+          break;
         case 'fetch':
           await this.actionFetch();
           break;
@@ -96,6 +99,13 @@ class VisualRegressionToolkit {
     }
   }
 
+  async actionInit() {
+    await this.actionFetch()
+    await this.actionAccept()
+    this.removeScreenshots(SCREENSHOTS_DIFF_PATH)
+    await this.actionDiff()
+  }
+
   async actionTest() {
     await this.actionFetch()
     await this.actionDiff()
@@ -103,7 +113,7 @@ class VisualRegressionToolkit {
   }
 
   async actionFetch() {
-    await this.removeScreenshots(SCREENSHOTS_LATEST_PATH)
+    this.removeScreenshots(SCREENSHOTS_LATEST_PATH)
 
     for (const url of this.urls) {
       await this.takeScreenshot(`${DOMAIN}${url}`)
@@ -115,7 +125,7 @@ class VisualRegressionToolkit {
       fs.mkdirSync(SCREENSHOTS_BASELINE_PATH, { recursive: true });
     }
 
-    await this.removeScreenshots(SCREENSHOTS_BASELINE_PATH)
+    this.removeScreenshots(SCREENSHOTS_BASELINE_PATH)
 
     if (fs.existsSync(SCREENSHOTS_LATEST_PATH)) {
       fs.readdirSync(SCREENSHOTS_LATEST_PATH).forEach(file => {
@@ -134,7 +144,7 @@ class VisualRegressionToolkit {
     let comparedPairs = 0;
     let differentPairs = 0;
 
-    await this.removeScreenshots(SCREENSHOTS_DIFF_PATH)
+    this.removeScreenshots(SCREENSHOTS_DIFF_PATH)
 
     if (fs.existsSync(SCREENSHOTS_LATEST_PATH) && fs.existsSync(SCREENSHOTS_BASELINE_PATH)) {
       const latestFiles = new Set(fs.readdirSync(SCREENSHOTS_LATEST_PATH));
@@ -219,9 +229,8 @@ class VisualRegressionToolkit {
     return `${validFileName}.png`;
   }
 
-  async removeScreenshots(path) {
+  removeScreenshots(path) {
     // remove all latest screenshots
-    // SCREENSHOTS_LATEST_PATH
     if (fs.existsSync(path)) {
         fs.readdirSync(path).forEach(file => {
             if (file.endsWith('.png')) {

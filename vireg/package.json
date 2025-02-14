@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "main": "vireg.mjs",
   "scripts": {
+    "init": "node vireg.mjs init",
     "fetch": "node vireg.mjs fetch",
     "diff": "node vireg.mjs diff",
     "report": "node vireg.mjs report",

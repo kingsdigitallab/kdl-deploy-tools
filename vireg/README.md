@@ -12,7 +12,7 @@ and reports differences in an HTML format.
    npm ci
    ```
 
-2. **Configure References**: Update `urls.csv` with URLs to test.
+2. **Configure References**: Update `urls.csv` with URLs to test. Only use webpath, leave out the domain.
 
 3. **Actions**:
 
@@ -21,12 +21,22 @@ and reports differences in an HTML format.
     ```
 
     Possible ACTION:
-    * **fetch**: fetch URLs from CSV file and save screenshots.
-    * **diff**: compare screenshots against baseline and generate HTML report.
-    * **report**: generate HTML report of all test results.
+    * **init**: remove all screenshots, take new ones (fetch) and accept them (accept)
+    * **fetch**: fetch URLs from CSV file and save screenshots
+    * **diff**: compare screenshots against baseline and generate HTML report
+    * **report**: generate a HTML report (report.html) of all test results
     * **test**: runs fetch, diff and report actions in sequence
     * **accept**: accept current screenshots as baseline for future comparisons
     * **urls**: list all urls from the CSV file
+
+4. **Typical workflow**:
+
+    1. Before your first test on a site: `npm run init`.
+    2. Then make changes to the site.
+    3. Run `npm run test` to take new screenshots and report difference
+    4. Open/reload report.html in your browser to see the differences
+    5. If there are any unwanted differences, return to step 2
+    6. Otherwise, if you are happy with the new screenshots, run `npm run accept` to save them as the new baseline.
 
 ## Notes
 
