@@ -1,7 +1,6 @@
 /*
 TODO:
 * better image comparison that takes text flow into account
-* parametrise DOMAIN
 D screenshots of all urls found in refs.csv
 D screenshot of the full web page length, no truncation
 D screenshots of urls created from book and page columns in refs
@@ -19,7 +18,7 @@ import {PNG} from 'pngjs';
 import pixelmatch from 'pixelmatch';
 
 // const VIEWPORT = {width: 1920, height: 2000}
-const DOMAIN = 'http://localhost:8082';
+const DOMAIN = process.env.DOMAIN || 'http://localhost:8082';
 const VIEWPORT = {width: 1280, height: 2000}
 const URLS_CSV_PATH = 'urls.csv';
 const STYLESHEET_PATH = 'vireg.css'
@@ -387,4 +386,3 @@ class VisualRegressionToolkit {
 
 let vr = new VisualRegressionToolkit()
 vr.run()
-
