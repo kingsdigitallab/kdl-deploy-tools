@@ -10,6 +10,7 @@ D remove content of diff folder at the start of the diff action
 D delay before screenshot
 */
 
+import 'dotenv/config';
 import { chromium } from "playwright";
 import fs from "fs";
 import path from "path";
