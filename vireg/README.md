@@ -56,6 +56,8 @@ and reports differences in an HTML format.
 * [pixelmatch](https://github.com/mapbox/pixelmatch): for comparing images
 * [csv-parser](https://github.com/mafintosh/csv-parser): for parsing CSV files
 
-## Environment Variables
+## External Variables
 
-- `DOMAIN`: The domain to test. If not provided, defaults to 'http://localhost:8082'.
+Variables are read from .env file or environment variables.
+
+- `DOMAIN`: The domain to test. If not provided, defaults to 'http://localhost:8080'.
