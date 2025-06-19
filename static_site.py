@@ -24,6 +24,7 @@ REDIRECT_TEMPLATE = '''
 </html>
 '''
 
+g_args = None
 
 def run_action():
     actions = {}
@@ -41,11 +42,16 @@ def run_action():
     
     parser.add_argument("action", help="action to perform", choices=actions.keys())
     parser.add_argument("-u", "--url", help="root url of site to copy")
+    parser.add_argument("-n", "--dry-run", action='store_true', help='Simulate the operation without making changes')
     args = parser.parse_args()
+    global g_args
+    g_args = args
 
     actions[args.action]['function'](args)
     
     print(f'done ({args.action})')
+    if _is_dry_run():
+        print('WARNING: --dry-run was on; nothing written.')
 
 def _get_actions_info():
     ret = {}
@@ -150,29 +156,78 @@ def action_report(parser):
             print(f'{len(new_external_links)} new external <link> in {p}')
             unique_external_links = unique_external_links.union(new_external_links)
 
+def _convert_query_string(path, is_web_path=False):
+    ret = str(path)
+
+    parts = ret.split('?')
+
+    if not parts[0].endswith('index.html'):
+        if '|' not in parts[0]:
+            # /a/b.html => /a/b/index.html
+            parts[0] = re.sub(r'([^/]+)\.html$', r'\1/index.html', parts[0])
+        
+    # TODO: deal with #
+    if len(parts) > 1:
+        qs = parts[1]
+        qs = qs.strip('?').strip('&')
+
+        # ret = ret.replace('index.html', '')
+
+        # if ret.startswith('?'): 
+        #     ret = './' + ret
+
+        # e.g. html/photos/index.html?phrase=.html
+        ## p2 = p.parent / re.sub(r'\?.*$', '', p.name)
+        # e.g. html/blog/index.html?page=2.html => html/blog|page__2/index.html
+        # e.g. html/browse/mss/52/ms_part.html?modal=True&x=12.html => html/browse/mss/52/ms_part|modal__True|x__12/index.html
+        # why?
+        qs = qs.replace('.html', '')
+        qs = qs.replace('=', '__')
+        qa = re.sub(r'&+', '|', qs)
+
+        qs += '.html'
+
+        ret = re.sub(r'[^/]+$', '', parts[0]) + '|' + qs
+    else:
+        ret = parts[0]
+    
+    if is_web_path:
+        if not ret.startswith('|'):
+            ret = re.sub(r'index\.html$', '', ret)
+
+    return ret
+
 def action_dedupe(parser):
     '''Removes a.html if same as a/index.html. Remove query strings from file names '?'.'''
-    for p in Path(COPY_PATH).glob('**/*.html'):
+    copy_path = Path(COPY_PATH)
+    for p in copy_path.glob('**/*.html'):
         # content = p.read_text()
         if p.name != 'index.html':
-            # case 1, a/index.html
-            p2 = p.parent / p.stem / 'index.html'
 
-            # case 2, ? in file name
-            if '?' in str(p.name):
-                # e.g. html/photos/index.html?phrase=.html
-                p2 = p.parent / re.sub(r'\?.*$', '', p.name)
+            p2 = copy_path / _convert_query_string(p.relative_to(copy_path))
 
             # (re)move
             if p2.exists():
-                if p.read_text() == p2.read_text():
-                    print(f'REMOVED {p}, SAME AS {p2}')
-                    p.unlink()
-                else:
-                    print(f'WARNING: {p} <> {p2}')
+                if not p2.samefile(p):
+                    if p.read_text() == p2.read_text():
+                        #if not has_query_string:
+                        print(f'REMOVED {p}, SAME AS {p2}')
+                        if not _is_dry_run():
+                            p.unlink()
+                    else:
+                        print(f'WARNING: {p} <> {p2}')
             else:
                 print(f'MOVED {p} to {p2}')
-                p.replace(p2)
+                if not p2.parent.exists():
+                    if not _is_dry_run():
+                        p2.parent.mkdir(parents=True)
+                if not _is_dry_run():
+                    p.replace(p2)
+
+def _get_new_href(old_href):
+    ret = old_href
+
+    return ret
                 
 def action_redirect(parser):
     '''Write redirect pages under 'html'.'''
@@ -198,7 +253,8 @@ def action_redirect(parser):
             depth = len(path.relative_to(COPY_PATH).parents) - 1
             r_to = _relink_url(r_to, root_url, depth)
             content = re.sub(r'\{\{\s*REDIRECT_URL\s*\}\}', r_to, REDIRECT_TEMPLATE)
-            path.write_text(content)
+            if not _is_dry_run():
+                path.write_text(content)
 
 def action_relink(parser):
     '''Improve hyperlinks. Remove /index.html & domain from internal links. Make paths relative.'''
@@ -209,9 +265,11 @@ def action_relink(parser):
         paths.extend(Path(COPY_PATH).glob(pattern))
 
     for p in paths:
+        # if 'blog/index.html?page=2.html' not in str(p): continue
         depth = len(p.relative_to(COPY_PATH).parents) - 1
         content = p.read_text()
-        pattern = r'(\s(?:src|href|action|poster|srcset)\s*=\s*")([^"#?]+)'
+        # pattern = r'(\s(?:src|href|action|poster|srcset)\s*=\s*")([^"#?]+)'
+        pattern = r'(\s(?:src|href|action|poster|srcset)\s*=\s*")([^"#]+)'
         if str(p).endswith('.css'):
             pattern = r'(url\(")([^"#?]+)'
         content_new = re.sub(
@@ -220,8 +278,12 @@ def action_relink(parser):
             content
         )
         if content_new != content:
-            p.write_text(content_new)
+            if not _is_dry_run():
+                p.write_text(content_new)
             print(f'UPDATED {str(p)}')
+
+def _is_dry_run():
+    return g_args.dry_run
 
 def _relink_urls(match, base_url, depth):
     # srcset="url1 w h, url2 w h, ..."
@@ -236,7 +298,8 @@ def _relink_urls(match, base_url, depth):
 def _relink_url(part, base_url, depth):
     '''Remove /index.html and domain from internal links
     e.g. href="https//mysite.com/a/b/index.html?q=1" 
-    => href="/a/b/?q=1" 
+    # => href="/a/b/?q=1" 
+    => href="/a/b|q__1" 
     '''
     ret = part
     # remove hard-coded domain to make the copy more portable
@@ -249,6 +312,10 @@ def _relink_url(part, base_url, depth):
         # e.g. /x/y/z => ../x/y/z
         if ret.startswith('/'):
             ret = '../' * depth + ret[1:]
+    
+        ret = _convert_query_string(ret, True)
+        # if ret != part:
+        #     print(f'{part} => {ret}')
 
     return ret
 
