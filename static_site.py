@@ -1,7 +1,7 @@
-'''
+"""
 Display the URLs that wget couldn't successfully request (40x, 500).
 Write redirect pages where wget copied the redirected content.
-'''
+"""
 import argparse
 from pathlib import Path
 import urllib.parse
@@ -66,7 +66,7 @@ def _get_actions_info():
     return ret
 
 def action_copy(parser):
-    '''Copy a website into files under a 'html' folder.'''
+    """Copy a website into files under a 'html' folder."""
     # 'https://renaissanceskin.ac.uk/'
     if not parser.url:
         _error('pass a valid URL to the copy action using -u')
@@ -89,7 +89,7 @@ def action_copy(parser):
     )
 
 def action_copy_and_fix(parser):
-    '''Run all actions. Copy a site then fix the copy.'''
+    """Run all actions. Copy a site then fix the copy."""
     action_copy(parser)
     action_dedupe(parser)
     action_redirect(parser)
@@ -102,7 +102,7 @@ def _error(message):
     exit(1)
 
 def action_report(parser):
-    '''Report errors found during last copy.'''
+    """Report errors found during last copy."""
     errors, redirects = _parse_copy_log()
 
     for code, issues in errors.items():
@@ -198,7 +198,7 @@ def _convert_query_string(path, is_web_path=False):
     return ret
 
 def action_dedupe(parser):
-    '''Removes a.html if same as a/index.html. Remove query strings from file names '?'.'''
+    """Removes a.html if same as a/index.html. Remove query strings from file names '?'."""
     copy_path = Path(COPY_PATH)
     for p in copy_path.glob('**/*.html'):
         # content = p.read_text()
@@ -230,7 +230,7 @@ def _get_new_href(old_href):
     return ret
                 
 def action_redirect(parser):
-    '''Write redirect pages under 'html'.'''
+    """Write redirect pages under 'html'."""
     errors, redirects = _parse_copy_log()
 
     root_url = _read_root_url()
@@ -257,7 +257,7 @@ def action_redirect(parser):
                 path.write_text(content)
 
 def action_relink(parser):
-    '''Improve hyperlinks. Remove /index.html & domain from internal links. Make paths relative.'''
+    """Improve hyperlinks. Remove /index.html & domain from internal links. Make paths relative."""
     base_url = _read_root_url()
 
     paths = []
@@ -296,11 +296,11 @@ def _relink_urls(match, base_url, depth):
     return match.group(1) + ret
 
 def _relink_url(part, base_url, depth):
-    '''Remove /index.html and domain from internal links
-    e.g. href="https//mysite.com/a/b/index.html?q=1" 
-    # => href="/a/b/?q=1" 
-    => href="/a/b|q__1" 
-    '''
+    """Remove /index.html and domain from internal links
+    e.g. href="https//mysite.com/a/b/index.html?q=1"
+    # => href="/a/b/?q=1"
+    => href="/a/b|q__1"
+    """
     ret = part
     # remove hard-coded domain to make the copy more portable
     ret = ret.replace(base_url, '/')
@@ -320,7 +320,7 @@ def _relink_url(part, base_url, depth):
     return ret
 
 def action_rename(parser):
-    '''Remove ?... from file names (e.g. x.css?v=5.6.1).'''
+    """Remove ?... from file names (e.g. x.css?v=5.6.1)."""
     for p in Path(COPY_PATH).glob('**/*'):
         p_new = re.sub(r'\?[^/]*$', '', str(p))
         if p_new != str(p):
@@ -332,7 +332,7 @@ def _get_domain_from_url(url):
     return urllib.parse.urlparse(url).netloc
 
 def _read_root_url():
-    '''Returns the first URL found at the end of line in the log file'''
+    """Returns the first URL found at the end of line in the log file"""
     ret = None
     with open(LOG_FILENAME, 'r') as f:
         for line in f:
@@ -346,11 +346,11 @@ def _read_root_url():
     return ret
 
 def action_serve(parser):
-    '''Locally serves the copy of the site'''
+    """Locally serves the copy of the site"""
     _run_command('python3', '-m', 'http.server', '-d', 'html', SERVER_PORT)
 
 def action_tag(parser):
-    '''Tag content for PageFind utility'''
+    """Tag content for PageFind utility"""
     # TODO: generalise. At the moment h2 is specific to renskin project.
     for p in Path(COPY_PATH).glob('**/*.html'):
         content = p.read_text()
@@ -377,7 +377,7 @@ def action_tag(parser):
 
 
 def _parse_copy_log():
-    '''Parses stderr from GNU Wget 1.21.4.'''
+    """Parses stderr from GNU Wget 1.21.4."""
     errors = {}
     redirects = {}
 
