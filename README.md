@@ -52,3 +52,31 @@ This tool is used for visual regression testing. It compares two images and
 reports any differences.
 
 More info in the [README.md file](vireg/README.md).
+
+
+## GPUs on SLURM (hpc-gpus)
+
+Shows number of available gpus on SLURM cluster.
+
+```bash
+
+python hpc-gpus.py
+
+       GPU | left (gpu) | max  (gpu) | left (int) | max  (int)
+--------------------------------------------------------------
+  a100_40g |          6 |         40 |          2 |         36
+  a100_80g |          0 |          0 |          1 |         41
+       a30 |          0 |          0 |          0 |          8
+       a40 |          0 |          0 |          0 |          6
+      h100 |          0 |          0 |          0 |         11
+        ib |          0 |          0 |          0 |          0
+      l40s |          0 |          0 |          2 |         19
+   rtx2080 |          0 |          0 |          1 |          4
+   rtx3070 |          0 |          0 |          9 |         10
+        t4 |          0 |          0 |          0 |          6
+   titan_v |          0 |          0 |          0 |          2
+  titan_xp |          0 |          0 |          0 |          2
+      v100 |          0 |          0 |          0 |          4
+
+Where int stands for `interruptible_gpu` partition.
+```
