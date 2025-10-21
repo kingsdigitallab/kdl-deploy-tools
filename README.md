@@ -56,7 +56,7 @@ More info in the [README.md file](vireg/README.md).
 
 ## GPUs on SLURM (hpc-gpus)
 
-Shows number of available gpus on SLURM cluster.
+Shows number of available gpus per type on SLURM cluster at any given moment.
 
 ```bash
 
@@ -77,6 +77,7 @@ python hpc-gpus.py
    titan_v |          0 |          0 |          0 |          2
   titan_xp |          0 |          0 |          0 |          2
       v100 |          0 |          0 |          0 |          4
-
-Where int stands for `interruptible_gpu` partition.
 ```
+
+Where `int` stands for `interruptible_gpu` partition.
+
