@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html class="theme-dark">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gitlab - reports</title>
+    <link rel="icon" href="data:," >
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+    </style>
+  </head>
+  <body>
+    <section class="section" id="report">
+      <div class="container is-fluid">
+        <div class="columns map-content">
+          <div class="column">
+            <div>
+              <label>Your gitlab token:
+                <input type="password" v-model="gitlabToken" @change="saveGitlabToken()">
+              </label>
+              <a class="button is-small" @click="requestProjects()">Fetch projects</a>
+            </div>
+            <table class="table">
+              <thead>
+                <tr>
+                  <td>Project</td>
+                  <td>Import Status</td>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="prj in projectsFiltered">
+                  <td><a :href="prj.web_url" target="_blank">{{ prj.name }}</a></td>
+                  <td>{{ prj.import_status }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+    <script>
+      const { createApp } = Vue;
+
+      async function loadJson(url, token, responseHeaders) {
+        let ret = {}
+        try {
+          let options = null
+          if (token) {
+            options = { 
+              headers: {
+                'PRIVATE-TOKEN': token
+              }
+            }            
+          }
+          const response = await fetch(url, options);
+          if (!response.ok) {
+            console.log(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+
+          if (responseHeaders) {
+            response.headers.forEach((value, key) => {
+              responseHeaders[key] = value
+            });
+          }
+
+          ret = data
+        } catch (err) {
+          console.error('Error loading JSON:', err);
+        }
+        return ret
+      }
+
+      createApp({
+        data() {
+          return {
+            projects: [],
+            gitlabToken: window.sessionStorage.getItem("gitlabToken", ''),
+          }
+        },
+        async mounted() {
+        },
+        computed: {
+          projectsFiltered() {
+            return this.projects.filter((p) => p.import_status == 'failed')
+          }
+        },
+        methods: {
+          async requestProjects() {
+            if (!this.gitlabToken) return
+
+            this.projects = []
+
+            let page = 1
+            let totalPage = 1
+            let responseHeaders = {}
+            while (1) {
+              let projects = await loadJson(
+                `https://gitlab.kdl.kcl.ac.uk/api/v4/projects?per_page=100&page=${page}`, 
+                this.gitlabToken,
+                responseHeaders
+              )
+              totalPage = parseInt(responseHeaders['x-total-pages'] ?? 0)
+              this.projects.push(...projects)
+              if (page >= totalPage) break;
+              page += 1
+            }
+
+          },
+          saveGitlabToken() {
+            window.sessionStorage.setItem("gitlabToken", this.gitlabToken);
+          }
+        }
+      }).mount('#report')
+    </script>
+  </body>
+</html>
