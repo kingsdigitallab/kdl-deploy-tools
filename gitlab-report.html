@@ -26,12 +26,14 @@
                 <tr>
                   <td>Project</td>
                   <td>Import Status</td>
+                  <td>Updated at</td>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="prj in projectsFiltered">
                   <td><a :href="prj.web_url" target="_blank">{{ prj.name }}</a></td>
                   <td>{{ prj.import_status }}</td>
+                  <td>{{ prj.updated_at }}</td>
                 </tr>
               </tbody>
             </table>
