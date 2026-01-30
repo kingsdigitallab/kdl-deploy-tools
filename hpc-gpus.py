@@ -115,6 +115,7 @@ for gpu_key in sorted(stats):
       part_info = info.get(partition, {'count': 0, 'used': 0, 'left': 0})
       cells += [part_info['left'], part_info['count']]
 
-   row = ' | '.join([f'{c:>10}' for c in cells])
+   row = ' | '.join([f'{c:>10}' if c else ' ' * 10 for c in cells])
 
    print(row)
+
