@@ -187,6 +187,65 @@ class VisualRegressionToolkit {
 
     if (img1.width !== img2.width || img1.height !== img2.height) {
       console.log('Images have different dimensions.');
+      const maxWidth = Math.max(img1.width, img2.width);
+      const maxHeight = Math.max(img1.height, img2.height);
+      const overlapWidth = Math.min(img1.width, img2.width);
+      const overlapHeight = Math.min(img1.height, img2.height);
+
+      const diffImg = new PNG({ width: maxWidth, height: maxHeight });
+      const RED = [255, 0, 0, 255];
+
+      function fillRect(data, imgWidth, x, y, w, h, color) {
+        for (let row = y; row < y + h; row++) {
+          for (let col = x; col < x + w; col++) {
+            const idx = (row * imgWidth + col) * 4;
+            data[idx] = color[0];
+            data[idx + 1] = color[1];
+            data[idx + 2] = color[2];
+            data[idx + 3] = color[3];
+          }
+        }
+      }
+
+      if (maxWidth > img1.width) {
+        fillRect(diffImg.data, maxWidth, img1.width, 0, maxWidth - img1.width, img1.height, RED);
+      }
+      if (maxHeight > img1.height) {
+        fillRect(diffImg.data, maxWidth, 0, img1.height, maxWidth, maxHeight - img1.height, RED);
+      }
+      if (maxWidth > img2.width) {
+        fillRect(diffImg.data, maxWidth, img2.width, 0, maxWidth - img2.width, img2.height, RED);
+      }
+      if (maxHeight > img2.height) {
+        fillRect(diffImg.data, maxWidth, 0, img2.height, maxWidth, maxHeight - img2.height, RED);
+      }
+
+      if (overlapWidth > 0 && overlapHeight > 0) {
+        const crop1 = Buffer.alloc(overlapWidth * overlapHeight * 4);
+        const crop2 = Buffer.alloc(overlapWidth * overlapHeight * 4);
+        const overlapDiff = Buffer.alloc(overlapWidth * overlapHeight * 4);
+
+        for (let y = 0; y < overlapHeight; y++) {
+          const srcRowStart = y * img1.width * 4;
+          const dstRowStart = y * overlapWidth * 4;
+          crop1.set(img1.data.subarray(srcRowStart, srcRowStart + overlapWidth * 4), dstRowStart);
+        }
+        for (let y = 0; y < overlapHeight; y++) {
+          const srcRowStart = y * img2.width * 4;
+          const dstRowStart = y * overlapWidth * 4;
+          crop2.set(img2.data.subarray(srcRowStart, srcRowStart + overlapWidth * 4), dstRowStart);
+        }
+
+        const diffCount = pixelmatch(crop1, crop2, overlapDiff, overlapWidth, overlapHeight, { threshold: 0.1 });
+
+        for (let y = 0; y < overlapHeight; y++) {
+          const srcRowStart = y * overlapWidth * 4;
+          const dstRowStart = y * maxWidth * 4;
+          diffImg.data.set(overlapDiff.subarray(srcRowStart, srcRowStart + overlapWidth * 4), dstRowStart);
+        }
+      }
+
+      fs.writeFileSync(diffImagePath, PNG.sync.write(diffImg));
       return false;
     }
 
