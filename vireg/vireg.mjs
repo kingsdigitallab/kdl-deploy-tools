@@ -1,6 +1,7 @@
 /*
 TODO:
 * better image comparison that takes text flow into account
+* multi-project mode, with one folder per project, which contains urls.csv, reports.html and the screenshots
 D screenshots of all urls found in refs.csv
 D screenshot of the full web page length, no truncation
 D screenshots of urls created from book and page columns in refs
@@ -19,19 +20,22 @@ import csvParser from 'csv-parser';
 import {PNG} from 'pngjs';
 import pixelmatch from 'pixelmatch';
 
+const __dirname = import.meta.dirname;
+
 // const VIEWPORT = {width: 1920, height: 2000}
 const DOMAIN = process.env.DOMAIN || 'http://localhost:8082';
+const VIREG_PROJECT = process.env.VIREG_PROJECT || 'default';
+const PROJECT_ROOT = path.join(__dirname, 'projects', VIREG_PROJECT);
 const VIEWPORT = {width: 1280, height: 2000}
-const URLS_CSV_PATH = 'urls.csv';
-const STYLESHEET_PATH = 'vireg.css'
-const SCREENSHOTS_BASELINE_PATH = 'screenshots/accepted';
-const SCREENSHOTS_LATEST_PATH = 'screenshots/latest';
-const SCREENSHOTS_DIFF_PATH = 'screenshots/diff';
-const REPORT_FILE_PATH = 'report.html';
-const REPORT_TEMPLATE_PATH = 'report-template.liquid';
+const URLS_CSV_PATH = path.join(PROJECT_ROOT, 'urls.csv');
+const STYLESHEET_PATH = path.join(PROJECT_ROOT, 'vireg.css');
+const SCREENSHOTS_BASELINE_PATH = path.join(PROJECT_ROOT, 'screenshots/accepted');
+const SCREENSHOTS_LATEST_PATH = path.join(PROJECT_ROOT, 'screenshots/latest');
+const SCREENSHOTS_DIFF_PATH = path.join(PROJECT_ROOT, 'screenshots/diff');
+const REPORT_FILE_PATH = path.join(PROJECT_ROOT, 'report.html');
+const REPORT_TEMPLATE_PATH = path.join(__dirname, 'report-template.liquid');
 const CAPTURE_FULL_PAGE = true;
 const PRE_SCREENSHOT_DELAY = 1000;
-const __dirname = import.meta.dirname;
 
 class VisualRegressionToolkit {
   constructor() {
@@ -41,6 +45,17 @@ class VisualRegressionToolkit {
 
   async init() {
     console.log('initialisation');
+    
+    if (!fs.existsSync(PROJECT_ROOT)) {
+      fs.mkdirSync(PROJECT_ROOT, { recursive: true });
+    }
+
+    // Copy default urls.csv if project doesn't have one
+    if (!fs.existsSync(URLS_CSV_PATH)) {
+      const defaultUrlsPath = path.join(__dirname, 'urls-default.csv');
+      fs.copyFileSync(defaultUrlsPath, URLS_CSV_PATH);
+      console.log(`Created default urls.csv for project ${VIREG_PROJECT}`);
+    }
     
     this.urls = await this.readUrls()
 
@@ -264,7 +279,7 @@ class VisualRegressionToolkit {
   async takeScreenshot(urlConfig) {
     const { url, delay, waitFor } = urlConfig;
     const fullUrl = `${DOMAIN}${url}`;
-    let screenshotPath = SCREENSHOTS_LATEST_PATH + '/' + this.getScreenshotFilenameFromURL(fullUrl);
+    let screenshotPath = path.join(SCREENSHOTS_LATEST_PATH, this.getScreenshotFilenameFromURL(fullUrl));
 
     // Apply delay (per-URL or default)
     const actualDelay = delay || PRE_SCREENSHOT_DELAY;
@@ -318,12 +333,12 @@ class VisualRegressionToolkit {
     return `${validFileName}.png`;
   }
 
-  removeScreenshots(path) {
+  removeScreenshots(dirPath) {
     // remove all latest screenshots
-    if (fs.existsSync(path)) {
-        fs.readdirSync(path).forEach(file => {
+    if (fs.existsSync(dirPath)) {
+        fs.readdirSync(dirPath).forEach(file => {
             if (file.endsWith('.png')) {
-                fs.unlinkSync(`${path}/${file}`);
+                fs.unlinkSync(path.join(dirPath, file));
             }
         })
     }
