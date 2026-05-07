@@ -206,35 +206,38 @@ class VisualRegressionToolkit {
     const { url, delay, waitFor } = urlConfig;
     const fullUrl = `${DOMAIN}${url}`;
     let screenshotPath = SCREENSHOTS_LATEST_PATH + '/' + this.getScreenshotFilenameFromURL(fullUrl);
-    console.log(`Screenshot: ${fullUrl} (delay: ${delay}ms${waitFor ? ', waitFor: ' + waitFor : ''}) -> ${screenshotPath}`);
+
+    // Apply delay (per-URL or default)
+    const actualDelay = delay || PRE_SCREENSHOT_DELAY;
+
+    console.log(`Screenshot: ${fullUrl} (delay: ${actualDelay}ms${waitFor ? ', waitFor: ' + waitFor : ''}) -> ${screenshotPath}`);
 
     try {
-      await this.webPage.goto(fullUrl, { timeout: 60000 })
-      await this.webPage.waitForLoadState('networkidle', { timeout: 60000 })
-      await this.webPage.waitForLoadState('domcontentloaded', { timeout: 60000 })
+      const TIMEOUT_DEFAULT_MILISECS = 10000
+      await this.webPage.goto(fullUrl, { timeout: TIMEOUT_DEFAULT_MILISECS })
+      if (actualDelay > 0) {
+        await this.webPage.waitForTimeout(actualDelay);
+      }
+      await this.webPage.waitForLoadState('networkidle', { timeout: TIMEOUT_DEFAULT_MILISECS })
+      await this.webPage.waitForLoadState('domcontentloaded', { timeout: TIMEOUT_DEFAULT_MILISECS })
       
       // Wait for specific selector if configured
       if (waitFor) {
         try {
-          await this.webPage.waitForSelector(waitFor, { timeout: 30000 });
+          await this.webPage.waitForSelector(waitFor, { timeout: TIMEOUT_DEFAULT_MILISECS });
           console.log(`  Waited for selector: ${waitFor}`);
         } catch (err) {
           console.warn(`  Selector '${waitFor}' not found, falling back to delay`);
         }
       }
       
-      // Apply delay (per-URL or default)
-      const actualDelay = delay || PRE_SCREENSHOT_DELAY;
-      if (actualDelay > 0) {
-        await this.webPage.waitForTimeout(actualDelay);
-      }
 
       await this.webPage.screenshot({
         path: screenshotPath,
         animations: 'disabled',
         style: this.styleSheetContent,
         fullPage: CAPTURE_FULL_PAGE,
-        timeout: 120000
+        timeout: 30000
       });
     } catch (error) {
       console.error(`Failed to screenshot ${fullUrl}: ${error.message}`);

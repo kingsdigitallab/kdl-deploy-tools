@@ -174,3 +174,5 @@ screenshot.css
 urls.csv
 .aider*
 gitlab-projects.json
+/html.bk
+/tmp
