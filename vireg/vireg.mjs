@@ -29,6 +29,7 @@ const SCREENSHOTS_LATEST_PATH = 'screenshots/latest';
 const SCREENSHOTS_DIFF_PATH = 'screenshots/diff';
 const REPORT_FILE_PATH = 'report.html';
 const REPORT_TEMPLATE_PATH = 'report-template.liquid';
+const CAPTURE_FULL_PAGE = true;
 const __dirname = import.meta.dirname;
 
 class VisualRegressionToolkit {
@@ -204,16 +205,22 @@ class VisualRegressionToolkit {
     let screenshotPath = SCREENSHOTS_LATEST_PATH + '/' + this.getScreenshotFilenameFromURL(url);
     console.log(`Screenshot: ${url} -> ${screenshotPath}`);
 
-    await this.webPage.goto(url)
-    await this.webPage.waitForLoadState('networkidle')
-    await this.webPage.waitForLoadState('domcontentloaded')
-    await this.webPage.waitForTimeout(10)
+    try {
+      await this.webPage.goto(url, { timeout: 60000 })
+      await this.webPage.waitForLoadState('networkidle', { timeout: 60000 })
+      await this.webPage.waitForLoadState('domcontentloaded', { timeout: 60000 })
+      await this.webPage.waitForTimeout(10)
 
-    await this.webPage.screenshot({ 
-      path: screenshotPath, 
-      animations: 'disabled', 
-      style: this.styleSheetContent
-    });
+      await this.webPage.screenshot({
+        path: screenshotPath,
+        animations: 'disabled',
+        style: this.styleSheetContent,
+        fullPage: CAPTURE_FULL_PAGE,
+        timeout: 120000
+      });
+    } catch (error) {
+      console.error(`Failed to screenshot ${url}: ${error.message}`);
+    }
   }
 
   readStyleSheet() {
