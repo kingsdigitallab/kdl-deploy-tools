@@ -9,8 +9,8 @@
 * use Conventional Commits prefixes, e.g. `fix(vireg):`, `feat(static_site):`. Most common prefix types are `fix`, `feat`, `doc`, `style`, `refactor`, `perf`, `ci` and `test`
 * add `!` after `feat` or `fix` for breaking changes, e.g. `feat(vireg)!:`
 * never do git push; it should remain manual
-* at the end of any code modification, propose a git add (if relevant) and a git commit message to be accepted manually
-* never commit, move, remove or add without user confirmation
+* after any round of code modification, propose a git add (if relevant) and a git commit message for manual review
+* always seek user confirmation before git commit, mv, rm or add
 
 # Coding style
 
