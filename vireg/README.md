@@ -49,26 +49,22 @@ url,delay,waitFor,unused
 /?page={page},2000,,page=1|2|3
 ```
 
-| Column | Description |
-|--------|-------------|
-| `url` | Path (without domain). Supports `{variable}` interpolation. |
-| `delay` | *(optional)* Delay in milliseconds before screenshot (overrides `PRE_SCREENSHOT_DELAY`). |
-| `waitFor` | *(optional)* CSS selector to wait for before capturing. |
-| other columns | Any column can be referenced as `{column}` in `url`; pipe `\|` separates multiple values. |
+* **`url`** — Path (without domain). Supports `{variable}` interpolation.
+* **`delay`** — *(optional)* Delay in milliseconds before screenshot (overrides `PRE_SCREENSHOT_DELAY`).
+* **`waitFor`** — *(optional)* CSS selector to wait for before capturing.
+* **other columns** — Any column can be referenced as `{column}` in `url`; pipe `|` separates multiple values.
 
 ## Actions
 
 Run via `npm run ACTION` where `ACTION` is one of:
 
-| Action | Description |
-|--------|-------------|
-| `init` | Remove all screenshots, fetch new ones, accept them as baseline, and run diff. |
-| `fetch` | Load each URL and save a screenshot to `screenshots/latest/`. |
-| `diff` | Compare `latest/` against `accepted/` and write diff images to `screenshots/diff/`. |
-| `report` | Generate `report.html` showing all diffs for review. |
-| `test` | Run `fetch`, `diff`, and `report` in sequence. |
-| `accept` | Copy current `latest/` screenshots to `accepted/` as the new baseline. |
-| `urls` | List all resolved URLs from the CSV. |
+* **`init`** — Remove all screenshots, fetch new ones, accept them as baseline, and run diff.
+* **`fetch`** — Load each URL and save a screenshot to `screenshots/latest/`.
+* **`diff`** — Compare `latest/` against `accepted/` and write diff images to `screenshots/diff/`.
+* **`report`** — Generate `report.html` showing all diffs for review.
+* **`test`** — Run `fetch`, `diff`, and `report` in sequence.
+* **`accept`** — Copy current `latest/` screenshots to `accepted/` as the new baseline.
+* **`urls`** — List all resolved URLs from the CSV.
 
 ## Typical workflow
 
