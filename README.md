@@ -81,3 +81,18 @@ python hpc-gpus.py
 
 Where `int` stands for `interruptible_gpu` partition.
 
+## GPU hoarder killer (kill-gpu-hoarder.py)
+
+Kills processes that allocate significant GPU VRAM but remain idle for too long.
+
+```bash
+python3 kill-gpu-hoarder.py
+```
+
+Requirements: NVIDIA GPU, `nvidia-smi`, python 3.6+. Must be run as **root**.
+
+Edit the constants at the top of the script to configure thresholds:
+
+* `VRAM_THRESHOLD_GB` (default: `2`) — minimum VRAM usage to be considered
+* `INACTIVE_LIMIT_MINUTES` (default: `10`) — how long a process can stay at 0% GPU compute before being killed
+* `CHECK_INTERVAL_SECONDS` (default: `5`) — polling interval
