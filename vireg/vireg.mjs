@@ -25,7 +25,6 @@ const __dirname = import.meta.dirname;
 const TEMPLATE_DIR = path.join(__dirname, 'projects', 'TEMPLATE');
 
 // const VIEWPORT = {width: 1920, height: 2000}
-const VIREG_VIREG_DOMAIN = process.env.VIREG_VIREG_DOMAIN || 'http://localhost:8082';
 const VIREG_PROJECT = process.env.VIREG_PROJECT || 'default';
 const PROJECT_ROOT = path.join(__dirname, 'projects', VIREG_PROJECT);
 const VIEWPORT = {width: 1280, height: 2000}
@@ -45,6 +44,43 @@ class VisualRegressionToolkit {
     this.urls = [];
   }
 
+  resolveDomain() {
+    const envDomain = process.env.VIREG_DOMAIN;
+
+    const configPath = path.join(PROJECT_ROOT, 'config.json');
+    if (!fs.existsSync(configPath)) {
+      return envDomain || 'http://localhost:8082';
+    }
+
+    let config;
+    try {
+      config = JSON.parse(fs.readFileSync(configPath).toString());
+    } catch (err) {
+      console.error('Failed to parse config.json:', err.message);
+      return envDomain || 'http://localhost:8082';
+    }
+
+    const domains = config && config.domains ? config.domains : null;
+    if (!domains) {
+      return envDomain || 'http://localhost:8082';
+    }
+
+    if (envDomain && domains[envDomain]) {
+      return domains[envDomain];
+    }
+
+    if (envDomain) {
+      return envDomain;
+    }
+
+    const defaultAlias = config.domain || null;
+    if (defaultAlias && domains[defaultAlias]) {
+      return domains[defaultAlias];
+    }
+
+    return 'http://localhost:8082';
+  }
+
   async init() {
     console.log('initialisation');
     
@@ -52,6 +88,9 @@ class VisualRegressionToolkit {
       fs.mkdirSync(PROJECT_ROOT, { recursive: true });
       this.copyTemplateFiles();
     }
+
+    this.domain = this.resolveDomain();
+    console.log(`Using domain: ${this.domain}`);
 
     this.urls = await this.readUrls()
 
@@ -288,7 +327,7 @@ class VisualRegressionToolkit {
 
   async takeScreenshot(urlConfig) {
     const { url, delay, waitFor } = urlConfig;
-    const fullUrl = `${VIREG_DOMAIN}${url}`;
+    const fullUrl = `${this.domain}${url}`;
     let screenshotPath = path.join(SCREENSHOTS_LATEST_PATH, this.getScreenshotFilenameFromURL(fullUrl));
 
     // Apply delay (per-URL or default)
@@ -338,7 +377,7 @@ class VisualRegressionToolkit {
   }
 
   getScreenshotFilenameFromURL(url) {
-    const relativeUrl = url.replace(VIREG_DOMAIN, '');
+    const relativeUrl = url.replace(this.domain, '');
     const validFileName = 's__' + relativeUrl.replace(/[^a-z0-9]/gi, '_').toLowerCase().replace(/^_+|_+$/g, '');
     return `${validFileName}.png`;
   }
@@ -465,7 +504,7 @@ class VisualRegressionToolkit {
 
     for (const urlConfig of this.urls) {
       const relativeUrl = urlConfig.url;
-      let url = `${VIREG_DOMAIN}${relativeUrl}`;
+      let url = `${this.domain}${relativeUrl}`;
       const validFileName = this.getScreenshotFilenameFromURL(url);
 
       if (diffFiles.has(`${validFileName}`)) {

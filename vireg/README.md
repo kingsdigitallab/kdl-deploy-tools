@@ -23,7 +23,7 @@ Settings are read from a `.env` file in the project root or from environment var
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `VIREG_DOMAIN` | `http://localhost:8082` | The domain to test against. |
+| `VIREG_DOMAIN` | *(see below)* | Domain alias from `config.json` or a literal URL. |
 | `VIREG_PROJECT` | `default` | Name of the project folder under `projects/`. |
 
 ## Project files
@@ -31,13 +31,35 @@ Settings are read from a `.env` file in the project root or from environment var
 Each project lives in `projects/<VIREG_PROJECT>/` and contains:
 
 - `urls.csv` — list of URLs to screenshot (see format below).
-- `vireg.css` *(optional)* — custom CSS injected before taking screenshots (e.g. to hide dynamic or animated elements).
+- `vireg.css` *(optional)* — custom CSS injected before taking screenshots.
+- `config.json` *(optional)* — domain aliases and default domain (see below).
 - `screenshots/accepted/` — baseline screenshots.
 - `screenshots/latest/` — most recently fetched screenshots.
 - `screenshots/diff/` — pixel-diff images where differences were found.
 - `report.html` — generated HTML report.
 
 On the first `init` run, all **files** (but not sub-folders) from `projects/TEMPLATE/` are copied into the new project folder automatically. Edit the files in `projects/TEMPLATE/` to change what new projects start with.
+
+### Domain configuration with `config.json`
+
+If `config.json` exists in the project folder, the domain is resolved through its aliases:
+
+```json
+{
+  "domains": {
+    "local": "http://localhost:8082",
+    "staging": "https://staging.example.com",
+    "prod": "https://example.com"
+  },
+  "domain": "local"
+}
+```
+
+Resolution rules:
+1. If `VIREG_DOMAIN` matches a key in `domains`, that value is used.
+2. If `VIREG_DOMAIN` does **not** match any key, it is treated as a literal domain URL (backward compatible).
+3. If `VIREG_DOMAIN` is not set, the alias in the `domain` key is used.
+4. If `config.json` is missing or invalid, the default is `http://localhost:8082`.
 
 ### urls.csv format
 
