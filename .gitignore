@@ -167,14 +167,13 @@ node_modules
 # project-specific
 /html
 .vscode/
-screenshots
-report.html
-screenshot.css
 .aider*
 gitlab-projects.json
 /html.bk
 /tmp
-/vireg/projects/
-!vireg/projects/TEMPLATE/vireg.css
-!vireg/projects/TEMPLATE/config.json
-!vireg/projects/TEMPLATE/urls.csv
+
+# vireg
+screenshots
+report.html
+screenshot.css
+vireg/projects/default/

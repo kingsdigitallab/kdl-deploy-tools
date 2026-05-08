@@ -170,7 +170,6 @@ class VisualRegressionToolkit {
   async actionInit() {
     await this.actionFetch()
     await this.actionAccept()
-    this.removeScreenshots(SCREENSHOTS_DIFF_PATH)
     await this.actionDiff()
   }
 

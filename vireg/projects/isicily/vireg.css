@@ -5,8 +5,9 @@
  * (e.g. timestamps, random ads, animated loaders).
  */
 
-/* Example: hide a dynamic clock */
-/* .live-clock { visibility: hidden; } */
-
-/* Example: hide an animated spinner */
-/* .loading-spinner { display: none; } */
+/* random image on home page */
+.hero-right img,
+/* "dev" marker */
+#top mark { 
+    visibility: hidden; 
+}
