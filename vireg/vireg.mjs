@@ -22,6 +22,8 @@ import pixelmatch from 'pixelmatch';
 
 const __dirname = import.meta.dirname;
 
+const TEMPLATE_DIR = path.join(__dirname, 'projects', 'TEMPLATE');
+
 // const VIEWPORT = {width: 1920, height: 2000}
 const DOMAIN = process.env.DOMAIN || 'http://localhost:8082';
 const VIREG_PROJECT = process.env.VIREG_PROJECT || 'default';
@@ -48,15 +50,9 @@ class VisualRegressionToolkit {
     
     if (!fs.existsSync(PROJECT_ROOT)) {
       fs.mkdirSync(PROJECT_ROOT, { recursive: true });
+      this.copyTemplateFiles();
     }
 
-    // Copy default urls.csv if project doesn't have one
-    if (!fs.existsSync(URLS_CSV_PATH)) {
-      const defaultUrlsPath = path.join(__dirname, 'urls-default.csv');
-      fs.copyFileSync(defaultUrlsPath, URLS_CSV_PATH);
-      console.log(`Created default urls.csv for project ${VIREG_PROJECT}`);
-    }
-    
     this.urls = await this.readUrls()
 
     this.styleSheetContent = this.readStyleSheet()
@@ -74,6 +70,20 @@ class VisualRegressionToolkit {
 
   async uninit() {
     await this.browser.close()
+  }
+
+  copyTemplateFiles() {
+    if (!fs.existsSync(TEMPLATE_DIR)) {
+      return;
+    }
+    fs.readdirSync(TEMPLATE_DIR).forEach(file => {
+      const src = path.join(TEMPLATE_DIR, file);
+      const dest = path.join(PROJECT_ROOT, file);
+      if (fs.statSync(src).isFile()) {
+        fs.copyFileSync(src, dest);
+        console.log(`Created default ${file} for project ${VIREG_PROJECT}`);
+      }
+    });
   }
 
   async run() {

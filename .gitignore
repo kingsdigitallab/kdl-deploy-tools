@@ -176,3 +176,5 @@ urls.csv
 gitlab-projects.json
 /html.bk
 /tmp
+!vireg/projects/TEMPLATE/urls.csv
+!vireg/projects/TEMPLATE/vireg.css

@@ -37,7 +37,7 @@ Each project lives in `projects/<VIREG_PROJECT>/` and contains:
 - `screenshots/diff/` — pixel-diff images where differences were found.
 - `report.html` — generated HTML report.
 
-On the first `init` run, a default `urls.csv` is created automatically if none exists.
+On the first `init` run, all **files** (but not sub-folders) from `projects/TEMPLATE/` are copied into the new project folder automatically. Edit the files in `projects/TEMPLATE/` to change what new projects start with.
 
 ### urls.csv format
 
