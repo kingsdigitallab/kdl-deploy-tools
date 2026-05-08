@@ -1,0 +1,12 @@
+/*
+ * vireg.css — Custom CSS injected before taking screenshots
+ *
+ * Use this file to hide elements that vary between runs
+ * (e.g. timestamps, random ads, animated loaders).
+ */
+
+/* Example: hide a dynamic clock */
+/* .live-clock { visibility: hidden; } */
+
+/* Example: hide an animated spinner */
+/* .loading-spinner { display: none; } */

@@ -1,0 +1,8 @@
+{
+  "domains": {
+    "local": "http://localhost:5173",
+    "staging": "https://kingsdigitallab.github.io/corpus-building",
+    "prod": "https://isicily.classics.ox.ac.uk"
+  },
+  "domain": "local"
+}

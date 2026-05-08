@@ -1,0 +1,12 @@
+url,delay,waitFor,unused
+/,,div.inscription-card,
+/?page=2,,div.inscription-card,
+/?page=1&q=isic000021,,div.inscription-card,
+/about,,,
+/bibliography,,,
+/museum,,,
+/how-to-cite,,,
+/technical-overview,,,
+/inscription/ISic000001,,,
+/inscription/ISic000004,,,
+/inscription/ISic000039,,,
