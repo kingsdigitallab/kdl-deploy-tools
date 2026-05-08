@@ -23,7 +23,7 @@ Settings are read from a `.env` file in the project root or from environment var
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `DOMAIN` | `http://localhost:8082` | The domain to test against. |
+| `VIREG_DOMAIN` | `http://localhost:8082` | The domain to test against. |
 | `VIREG_PROJECT` | `default` | Name of the project folder under `projects/`. |
 
 ## Project files

@@ -25,7 +25,7 @@ const __dirname = import.meta.dirname;
 const TEMPLATE_DIR = path.join(__dirname, 'projects', 'TEMPLATE');
 
 // const VIEWPORT = {width: 1920, height: 2000}
-const DOMAIN = process.env.DOMAIN || 'http://localhost:8082';
+const VIREG_VIREG_DOMAIN = process.env.VIREG_VIREG_DOMAIN || 'http://localhost:8082';
 const VIREG_PROJECT = process.env.VIREG_PROJECT || 'default';
 const PROJECT_ROOT = path.join(__dirname, 'projects', VIREG_PROJECT);
 const VIEWPORT = {width: 1280, height: 2000}
@@ -288,7 +288,7 @@ class VisualRegressionToolkit {
 
   async takeScreenshot(urlConfig) {
     const { url, delay, waitFor } = urlConfig;
-    const fullUrl = `${DOMAIN}${url}`;
+    const fullUrl = `${VIREG_DOMAIN}${url}`;
     let screenshotPath = path.join(SCREENSHOTS_LATEST_PATH, this.getScreenshotFilenameFromURL(fullUrl));
 
     // Apply delay (per-URL or default)
@@ -338,7 +338,7 @@ class VisualRegressionToolkit {
   }
 
   getScreenshotFilenameFromURL(url) {
-    const relativeUrl = url.replace(DOMAIN, '');
+    const relativeUrl = url.replace(VIREG_DOMAIN, '');
     const validFileName = 's__' + relativeUrl.replace(/[^a-z0-9]/gi, '_').toLowerCase().replace(/^_+|_+$/g, '');
     return `${validFileName}.png`;
   }
@@ -465,7 +465,7 @@ class VisualRegressionToolkit {
 
     for (const urlConfig of this.urls) {
       const relativeUrl = urlConfig.url;
-      let url = `${DOMAIN}${relativeUrl}`;
+      let url = `${VIREG_DOMAIN}${relativeUrl}`;
       const validFileName = this.getScreenshotFilenameFromURL(url);
 
       if (diffFiles.has(`${validFileName}`)) {
