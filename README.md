@@ -96,3 +96,7 @@ Edit the constants at the top of the script to configure thresholds:
 * `VRAM_THRESHOLD_GB` (default: `2`) — minimum VRAM usage to be considered
 * `INACTIVE_LIMIT_MINUTES` (default: `10`) — how long a process can stay at 0% GPU compute before being killed
 * `CHECK_INTERVAL_SECONDS` (default: `5`) — polling interval
+
+## Analog (analog.py)
+
+Analyse web access log files. Run `python3 analog.py --help` to see available actions.
