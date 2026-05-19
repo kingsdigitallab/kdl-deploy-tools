@@ -9,6 +9,7 @@ from pathlib import Path
 
 DEFAULT_LOG_PATH = 'access.log'
 IP_PATTERN = r'^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+AGENT_PATTERN = r'"([^"]*)"\s*$'
 
 
 def run_action():
@@ -58,6 +59,24 @@ def action_ip_freq(args):
 
     for ip, count in ip_counts.most_common():
         print(f'{count}\t{ip}')
+
+
+def action_agent_freq(args):
+    """Return the number of times each user agent appears, from most to least frequent."""
+    log_path = Path(args.file)
+    if not log_path.exists():
+        print(f'ERROR: log file not found ({log_path})')
+        return
+
+    agent_counts = Counter()
+    with log_path.open('r') as f:
+        for line in f:
+            match = re.search(AGENT_PATTERN, line)
+            if match:
+                agent_counts[match.group(1)] += 1
+
+    for agent, count in agent_counts.most_common():
+        print(f'{count}\t{agent}')
 
 
 if __name__ == '__main__':
