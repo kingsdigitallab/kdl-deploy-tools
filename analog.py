@@ -43,40 +43,47 @@ def _get_actions_info():
     return ret
 
 
-def action_ip_freq(args):
-    """Return the number of times each IP appears, from most to least frequent."""
-    log_path = Path(args.file)
-    if not log_path.exists():
-        print(f'ERROR: log file not found ({log_path})')
-        return
+def _validate_log_path(path_str):
+    ret = Path(path_str)
+    if not ret.exists():
+        print(f'ERROR: log file not found ({ret})')
+        return None
+    return ret
 
-    ip_counts = Counter()
+
+def _count_pattern(log_path, pattern, group=1):
+    ret = Counter()
     with log_path.open('r') as f:
         for line in f:
-            match = re.match(IP_PATTERN, line)
+            match = re.search(pattern, line)
             if match:
-                ip_counts[match.group(1)] += 1
+                ret[match.group(group)] += 1
+    return ret
 
-    for ip, count in ip_counts.most_common():
-        print(f'{count}\t{ip}')
+
+def _print_counts(counts):
+    for item, count in counts.most_common():
+        print(f'{count}\t{item}')
+
+
+def action_ip_freq(args):
+    """Return the number of times each IP appears, from most to least frequent."""
+    log_path = _validate_log_path(args.file)
+    if not log_path:
+        return
+
+    counts = _count_pattern(log_path, IP_PATTERN)
+    _print_counts(counts)
 
 
 def action_agent_freq(args):
     """Return the number of times each user agent appears, from most to least frequent."""
-    log_path = Path(args.file)
-    if not log_path.exists():
-        print(f'ERROR: log file not found ({log_path})')
+    log_path = _validate_log_path(args.file)
+    if not log_path:
         return
 
-    agent_counts = Counter()
-    with log_path.open('r') as f:
-        for line in f:
-            match = re.search(AGENT_PATTERN, line)
-            if match:
-                agent_counts[match.group(1)] += 1
-
-    for agent, count in agent_counts.most_common():
-        print(f'{count}\t{agent}')
+    counts = _count_pattern(log_path, AGENT_PATTERN)
+    _print_counts(counts)
 
 
 if __name__ == '__main__':
