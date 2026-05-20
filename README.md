@@ -97,6 +97,23 @@ Edit the constants at the top of the script to configure thresholds:
 * `INACTIVE_LIMIT_MINUTES` (default: `10`) — how long a process can stay at 0% GPU compute before being killed
 * `CHECK_INTERVAL_SECONDS` (default: `5`) — polling interval
 
+## List models behind litellm API (litellmodels.py)
+
+Before the first run set the following variables in your `env/litellmodels.py` script:
+`API_URL` (API entry point), `TOKEN` (your litellm API token).
+
+```bash
+python3 litellmodels.py 
+
+arc:apex_pro    perplexity/arc-apex_pro        moonshotai/Kimi-K2.6       262144 VISION
+arc:apex        hosted_vllm/arc:apex           moonshotai/Kimi-K2.6       262144 VISION
+arc:nexus       hosted_vllm/arc:nexus          Qwen/Qwen3.6-35B-A3B       262144 VISION
+arc:lite        ollama_chat/arc:lite           Google/Gemma4:26b           32768 VISION
+arc:nano        ollama_chat/arc:nano           Google/Gemma4:e4b            8192 VISION
+arc:embed       ollama/qwen3-embedding:0.6b    qwen/qwen3-embedding-0.6b    None       
+medgemma1.5:4b  ollama/medgemma1.5:4b          Google/medgemma1.5:4b       32768 VISION
+```
+
 ## Analog (analog.py)
 
 Analyse web access log files. Run `python3 analog.py --help` to see available actions.
