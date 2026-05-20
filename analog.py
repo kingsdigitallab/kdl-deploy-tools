@@ -1,6 +1,8 @@
 """Analyse web access log files.
 Authors: opencode:kimi-k2.6
 Prompted & tweaked by GN
+
+114.119.163.186 - - [19/May/2026:00:00:54 +0000] "GET /digipal/page/5504/?graph=13741 HTTP/1.1" 200 25251 "https://www.modelsofauthority.ac.uk/digipal/page/5504?graph=13813" "Mozilla/5.0 (Linux; Android 7.0;) AppleWebKit/537.36 (HTML, like Gecko) Mobile Safari/537.36 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)"
 """
 import argparse
 import re
