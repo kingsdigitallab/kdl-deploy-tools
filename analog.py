@@ -11,6 +11,7 @@ from pathlib import Path
 
 DEFAULT_LOG_PATH = 'access.log'
 IP_PATTERN = r'^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+IP3_PATTERN = r'^(\d{1,3}\.\d{1,3}\.\d{1,3}\.)'
 AGENT_PATTERN = r'"([^"]*)"\s*$'
 
 
@@ -77,6 +78,14 @@ def action_ip_freq(args):
     counts = _count_pattern(log_path, IP_PATTERN)
     _print_counts(counts)
 
+def action_ip3_freq(args):
+    """Return the number of times each X.Y.Z IP appears, from most to least frequent."""
+    log_path = _validate_log_path(args.file)
+    if not log_path:
+        return
+
+    counts = _count_pattern(log_path, IP3_PATTERN)
+    _print_counts(counts)
 
 def action_agent_freq(args):
     """Return the number of times each user agent appears, from most to least frequent."""
