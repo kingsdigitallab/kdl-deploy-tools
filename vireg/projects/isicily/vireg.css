@@ -11,3 +11,8 @@
 #top mark { 
     visibility: hidden; 
 }
+/* openseadragon viewer buttons */
+div.openseadragon-container > div:not(.openseadragon-canvas) {
+    visibility: hidden;
+}
+

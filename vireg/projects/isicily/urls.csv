@@ -2,6 +2,9 @@ url,delay,waitFor,unused
 /,,div.inscription-card,
 /?page=2,,div.inscription-card,
 /?page=1&q=isic000021,,div.inscription-card,
+/?limit=20&mode=isic-numbers&page=1&q=62+63+662+2104&view=cards,,div.inscription-card,
+/?limit=20&mode=isic-numbers&page=1&q=62+63+662+2104&view=table,,div.inscription-card,
+/?limit=20&mode=isic-numbers&page=1&q=62+63+662+2104&view=text,,div.inscription-card,
 /about,,,
 /bibliography,,,
 /museum,,,
@@ -10,3 +13,7 @@ url,delay,waitFor,unused
 /inscription/ISic000001,,,
 /inscription/ISic000004,,,
 /inscription/ISic000039,,,
+/inscription/ISic002104,,,
+/inscription/ISic000062,,,
+/inscription/ISic000063,,,
+
