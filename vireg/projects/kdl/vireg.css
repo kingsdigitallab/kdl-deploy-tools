@@ -1,0 +1,18 @@
+/*
+ * vireg.css — Custom CSS injected before taking screenshots
+ *
+ * Use this file to hide elements that vary between runs
+ * (e.g. timestamps, random ads, animated loaders).
+ */
+
+/* random image on home page */
+.hero-right img,
+/* "dev" marker */
+#top mark { 
+    visibility: hidden; 
+}
+/* openseadragon viewer buttons */
+div.openseadragon-container > div:not(.openseadragon-canvas) {
+    visibility: hidden;
+}
+

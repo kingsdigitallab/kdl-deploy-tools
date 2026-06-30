@@ -1,0 +1,8 @@
+{
+  "domains": {
+    "local": "http://localhost:8080",
+    "staging": "https://kingsdigitallab.github.io/kdl/",
+    "prod": "https://kdl.kcl.ac.uk/"
+  },
+  "domain": "local"
+}
