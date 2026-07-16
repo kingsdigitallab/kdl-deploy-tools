@@ -1,0 +1,9 @@
+{
+  "domains": {
+    "local": "http://localhost:8000",
+    "dev": "https://thornton-dev.kdl.kcl.ac.uk",
+    "staging": "https://staging.example.com",
+    "prod": "https://thornton.kdl.kcl.ac.uk"
+  },
+  "domain": "dev"
+}
