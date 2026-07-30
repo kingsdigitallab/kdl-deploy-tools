@@ -97,7 +97,7 @@ Edit the constants at the top of the script to configure thresholds:
 * `INACTIVE_LIMIT_MINUTES` (default: `10`) — how long a process can stay at 0% GPU compute before being killed
 * `CHECK_INTERVAL_SECONDS` (default: `5`) — polling interval
 
-## List models behind litellm API (list_models.py)
+## List models behind an LLM API (list_models.py)
 
 Before the first run set the following variables in your `env/list_models.py` script:
 `API_URL` (API entry point), `TOKEN` (your API token).
