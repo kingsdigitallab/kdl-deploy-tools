@@ -3,7 +3,7 @@ url,delay,waitFor,unused
 /books/,100
 /edition/?p0.lo=p.1&p0.vi=modern,3000
 /books/book_of_remembrances/,100,,
-/entities/
+/entities/,2000
 /entities/textsearch/?f.version=Modernised,3000
 /about/,100
 /edition/guidelines/,2000
