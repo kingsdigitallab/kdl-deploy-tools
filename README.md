@@ -1,5 +1,13 @@
 # kdl-deploy-tools
-Collection of small tools for CI/CD &amp; sustainability
+Collection of small tools for CI/CD &amp; sustainability.
+
+Development principles:
+1. stick to python, bash and javascript scripts
+1. keep dependencies minimal (preferably just python without third party packages)
+2. leave single file tool in the project root folder; multi-files script goes into its own folder
+3. settings files go under .env folder, UNVERSIONED
+4. no vibe coding, AI code bloat or gold plating
+5. try to keep scripts up to date; or document if stale
 
 ## Static sites (static_site.py)
 
