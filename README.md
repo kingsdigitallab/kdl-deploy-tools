@@ -97,21 +97,23 @@ Edit the constants at the top of the script to configure thresholds:
 * `INACTIVE_LIMIT_MINUTES` (default: `10`) — how long a process can stay at 0% GPU compute before being killed
 * `CHECK_INTERVAL_SECONDS` (default: `5`) — polling interval
 
-## List models behind litellm API (litellmodels.py)
+## List models behind litellm API (list_models.py)
 
-Before the first run set the following variables in your `env/litellmodels.py` script:
-`API_URL` (API entry point), `TOKEN` (your litellm API token).
+Before the first run set the following variables in your `env/list_models.py` script:
+`API_URL` (API entry point), `TOKEN` (your API token).
 
 ```bash
-python3 litellmodels.py 
+python3 list_models.py 
 
-arc:apex_pro    perplexity/arc-apex_pro        moonshotai/Kimi-K2.6       262144 VISION
-arc:apex        hosted_vllm/arc:apex           moonshotai/Kimi-K2.6       262144 VISION
-arc:nexus       hosted_vllm/arc:nexus          Qwen/Qwen3.6-35B-A3B       262144 VISION
-arc:lite        ollama_chat/arc:lite           Google/Gemma4:26b           32768 VISION
-arc:nano        ollama_chat/arc:nano           Google/Gemma4:e4b            8192 VISION
-arc:embed       ollama/qwen3-embedding:0.6b    qwen/qwen3-embedding-0.6b    None       
-medgemma1.5:4b  ollama/medgemma1.5:4b          Google/medgemma1.5:4b       32768 VISION
+2026-07-30T22:44:36.265804
+arc:apex_pro    perplexity           nvidia/GLM-5.2-NVFP4             1024k       
+arc:apex        hosted_vllm          nvidia/GLM-5.2-NVFP4             1024k       
+arc:nexus       hosted_vllm          Qwen/Qwen3.6-35B-A3B              256k VISION
+arc:lite        hosted_vllm          Google/Gemma4:26B-A4B             128k VISION
+arc:nano        hosted_vllm          Google/Gemma4:26B-A4B              16k VISION
+arc:embed       hosted_vllm          qwen/qwen3-embedding-0.6b          32k       
+arc:embedvl     hosted_vllm          Qwen/Qwen3-VL-Embedding-2B         32k       
+arc:rerankvl    hosted_vllm          Qwen/Qwen3-VL-Reranker-2B          32k       
 ```
 
 ## Analog (analog.py)

@@ -1,8 +1,9 @@
 import json
 import ssl
 import urllib.request
+from datetime import datetime
 
-from env.litellmodels import API_URL, TOKEN
+from env.list_models import API_URL, TOKEN
 
 IS_ER_API = True
 
@@ -25,6 +26,8 @@ def call_json_api(url, token, print_json=False):
         print(json.dumps(ret, indent=2))
 
     return ret
+
+print(datetime.now().isoformat())
 
 if IS_ER_API:
     # openai/er api
