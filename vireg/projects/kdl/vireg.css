@@ -16,3 +16,6 @@ div.openseadragon-container > div:not(.openseadragon-canvas) {
     visibility: hidden;
 }
 
+footer div.connect li:nth-child(4) {
+    visibility: hidden;
+}

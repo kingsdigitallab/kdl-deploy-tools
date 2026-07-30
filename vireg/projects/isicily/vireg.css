@@ -16,3 +16,7 @@ div.openseadragon-container > div:not(.openseadragon-canvas) {
     visibility: hidden;
 }
 
+/* version label */
+.footer-bottom li:last-of-type {
+    visibility: hidden;
+}
