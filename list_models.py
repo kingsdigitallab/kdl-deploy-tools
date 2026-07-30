@@ -31,7 +31,7 @@ print(datetime.now().isoformat())
 
 if IS_ER_API:
     # openai/er api
-    res_dic = call_json_api(f"{API_URL}/api/v1/models", TOKEN)
+    res_dic = call_json_api(f"{API_URL}/v1/models", TOKEN)
 
     for model in res_dic:
         vision_status = 'VISION' if model["supports_vision"] else ''
