@@ -499,6 +499,13 @@ class VisualRegressionToolkit {
   async actionReport() {
     let diffs = [];
 
+    // Paths are made relative to the project folder (where report.html lives)
+    // so the report resolves its images on the host regardless of the absolute
+    // location the toolkit ran from (e.g. inside a container at /app).
+    const baselineDir = path.relative(PROJECT_ROOT, SCREENSHOTS_BASELINE_PATH);
+    const latestDir = path.relative(PROJECT_ROOT, SCREENSHOTS_LATEST_PATH);
+    const diffDir = path.relative(PROJECT_ROOT, SCREENSHOTS_DIFF_PATH);
+
     const diffFiles = new Set(fs.readdirSync(SCREENSHOTS_DIFF_PATH));
 
     for (const urlConfig of this.urls) {
@@ -511,9 +518,9 @@ class VisualRegressionToolkit {
           relativeUrl,
           url,
           validFileName,
-          baseline: `${SCREENSHOTS_BASELINE_PATH}/${validFileName}`,
-          latest: `${SCREENSHOTS_LATEST_PATH}/${validFileName}`,
-          diff: `${SCREENSHOTS_DIFF_PATH}/${validFileName}`
+          baseline: `${baselineDir}/${validFileName}`,
+          latest: `${latestDir}/${validFileName}`,
+          diff: `${diffDir}/${validFileName}`
         });
       }
     }
