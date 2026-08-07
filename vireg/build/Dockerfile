@@ -9,6 +9,17 @@ FROM mcr.microsoft.com/playwright:v1.50.1-noble
 
 WORKDIR /app
 
+# The Playwright image ships only Liberation/FreeFont/CJK fonts. Sites such as
+# I.Sicily resolve body text to "Noto Sans" (a system font) ahead of their
+# self-hosted webfonts, so the rendered font differs from a desktop browser.
+# Install the fonts an Ubuntu desktop has so font stacks resolve identically.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      fonts-noto-core \
+      fonts-dejavu-core \
+      fonts-ubuntu \
+ && rm -rf /var/lib/apt/lists/*
+
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 

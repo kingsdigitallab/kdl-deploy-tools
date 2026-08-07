@@ -354,6 +354,12 @@ class VisualRegressionToolkit {
       }
       
 
+      try {
+        await this.webPage.evaluate(() => document.fonts.ready);
+      } catch (err) {
+        console.warn(`  document.fonts.ready failed: ${err.message}`);
+      }
+
       await this.webPage.screenshot({
         path: screenshotPath,
         animations: 'disabled',
