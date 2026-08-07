@@ -37,6 +37,7 @@ const REPORT_FILE_PATH = path.join(PROJECT_ROOT, 'report.html');
 const REPORT_TEMPLATE_PATH = path.join(__dirname, 'report-template.liquid');
 const CAPTURE_FULL_PAGE = true;
 const PRE_SCREENSHOT_DELAY = 1000;
+const IMAGE_LOAD_TIMEOUT_MILISECS = 10000;
 
 class VisualRegressionToolkit {
   constructor() {
@@ -324,6 +325,29 @@ class VisualRegressionToolkit {
     return true;
   }
 
+  async waitForImagesLoaded() {
+    let ret = true
+    try {
+      // naturalWidth > 0 means the image finished loading and actually decoded
+      // (a broken/404 image reports naturalWidth === 0, so we time out and warn
+      // rather than fail the whole run).
+      await this.webPage.waitForFunction(
+        () => [...document.images].every(img => img.complete && img.naturalWidth > 0),
+        null,
+        { timeout: IMAGE_LOAD_TIMEOUT_MILISECS }
+      );
+    } catch (err) {
+      ret = false
+      const missingCount = await this.webPage.evaluate(() =>
+        [...document.images]
+          .filter(img => !img.complete || img.naturalWidth === 0)
+          .length
+      );
+      console.warn(`  Images still not loaded: ${missingCount}`);
+    }
+    return ret;
+  }
+
   async takeScreenshot(urlConfig) {
     const { url, delay, waitFor } = urlConfig;
     const fullUrl = `${this.domain}${url}`;
@@ -359,6 +383,8 @@ class VisualRegressionToolkit {
       } catch (err) {
         console.warn(`  document.fonts.ready failed: ${err.message}`);
       }
+
+      await this.waitForImagesLoaded();
 
       await this.webPage.screenshot({
         path: screenshotPath,
