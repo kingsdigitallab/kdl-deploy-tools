@@ -17,6 +17,10 @@ div.openseadragon-container > div:not(.openseadragon-canvas) {
 }
 
 /* version label */
-.footer-bottom li:last-of-type {
-    visibility: hidden;
+.footer-bottom li a.version {
+    visibility: hidden !important;
+}
+
+ul.qa-links {
+    display: none !important;
 }
