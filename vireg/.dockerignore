@@ -1,0 +1,12 @@
+# Keep the Docker build context small and avoid copying host state/secrets.
+# Code and data are bind-mounted at runtime, so they are not needed to build
+# the image (only package.json, package-lock.json and build/entrypoint.sh are).
+
+node_modules
+**/node_modules
+projects
+test2
+.git
+.gitignore
+.env
+*.md

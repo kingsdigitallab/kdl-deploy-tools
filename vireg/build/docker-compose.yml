@@ -1,0 +1,27 @@
+# Run the vireg visual-regression toolkit inside a container.
+#
+# All vireg code and data live on the host and are bind-mounted at /app, so
+# screenshots, reports and project files are shared with the host in both
+# directions. A named volume shadows the host's node_modules so the container
+# uses its own dependencies instead of the (possibly host-incompatible) ones.
+
+services:
+  vireg:
+    build:
+      context: ..
+      dockerfile: build/Dockerfile
+    image: vireg:local
+    working_dir: /app
+    # Chromium needs more shared memory than the default container allocates.
+    ipc: host
+    # Lets the container reach dev servers running on the host via localhost.
+    network_mode: host
+    entrypoint: ["/usr/local/bin/vireg-entrypoint.sh"]
+    command: ["node", "vireg.mjs", "test"]
+    volumes:
+      - ..:/app
+      - vireg-node-modules:/app/node_modules
+
+volumes:
+  vireg-node-modules:
+    name: vireg-node-modules
