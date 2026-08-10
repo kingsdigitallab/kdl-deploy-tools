@@ -1,0 +1,7 @@
+{
+  "domains": {
+    "local": "http://localhost:8081",
+    "prod": "https://sharc.kcl.ac.uk/exhibition"
+  },
+  "domain": "prod"
+}
