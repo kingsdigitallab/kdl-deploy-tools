@@ -10,15 +10,21 @@ url,delay,waitFor,unused
 /museum,,,
 /how-to-cite,,,
 /technical-overview,,,
-/inscription/ISic000001,,,
-/inscription/ISic000004,,,
-/inscription/ISic000039,,,
-/inscription/ISic002104,,,
-/inscription/ISic000062,,,
-/inscription/ISic000063,,,
-/inscription/ISic000078,,,"apparatus criticus empty, object type empty"
+/inscription/ISic000001,,,3000
+/inscription/ISic000004,,,3000
+/inscription/ISic000039,,,3000
+/inscription/ISic002104,,,3000
+/inscription/ISic000062,,,3000
+/inscription/ISic000063,,,3000
+/inscription/ISic000078,,,,"apparatus criticus empty, object type empty"
 /inscription/ISic000778
-/inscription/ISic003441,,,Handnote paragraph
-/inscription/ISic000833,,,Handnote paragraph & links
-/inscription/ISic003409,,,Deprecated record
-/inscription/ISic000590,,,deprecated
+/inscription/ISic003441,,,3000,Handnote para w/ links w/o variants
+/inscription/ISic003574,,,3000,Handnote para w/ links w/o variants
+/inscription/ISic000833,,,3000,Handnote para w/ links + variants
+/inscription/ISic000613,,,3000,Handnote w/o para      + variants
+/inscription/ISic001833,,,3000,Handnote w/ render issue; no types listed
+/inscription/ISic000612,,,3000,Handnote 
+/inscription/ISic000003,,,3000,Handnote para w/o links
+/inscription/ISic003409,,,3000,Deprecated record
+/inscription/ISic000590,,,3000,deprecated
+

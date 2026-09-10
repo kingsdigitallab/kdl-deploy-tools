@@ -349,8 +349,15 @@ class VisualRegressionToolkit {
   }
 
   async takeScreenshot(urlConfig) {
-    const { url, delay, waitFor } = urlConfig;
+    const { url, delay, waitFor, comment, viewportHeight } = urlConfig;
     const fullUrl = `${this.domain}${url}`;
+
+    let viewport = {...VIEWPORT}
+    if (viewportHeight) {
+      viewport.height = parseInt(viewportHeight)
+    }
+    await this.webPage.setViewportSize(viewport);
+
     let screenshotPath = path.join(SCREENSHOTS_LATEST_PATH, this.getScreenshotFilenameFromURL(fullUrl));
 
     // Apply delay (per-URL or default)
