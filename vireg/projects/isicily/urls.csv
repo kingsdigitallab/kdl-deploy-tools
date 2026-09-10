@@ -1,4 +1,4 @@
-url,delay,waitFor,unused
+url,delay,waitFor,viewportHeight,comment
 /,,div.inscription-card,
 /?page=2,,div.inscription-card,
 /?page=1&q=isic000021,,div.inscription-card,
