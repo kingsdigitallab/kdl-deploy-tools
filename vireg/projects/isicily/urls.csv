@@ -17,7 +17,7 @@ url,delay,waitFor,viewportHeight,comment
 /inscription/ISic000062,,,3000
 /inscription/ISic000063,,,3000
 /inscription/ISic000078,,,,"apparatus criticus empty, object type empty"
-/inscription/ISic000778
+/inscription/ISic000778,,,3000
 /inscription/ISic003441,,,3000,Handnote para w/ links w/o variants
 /inscription/ISic003574,,,3000,Handnote para w/ links w/o variants
 /inscription/ISic000833,,,3000,Handnote para w/ links + variants
@@ -25,6 +25,6 @@ url,delay,waitFor,viewportHeight,comment
 /inscription/ISic001833,,,3000,Handnote w/ render issue; no types listed
 /inscription/ISic000612,,,3000,Handnote 
 /inscription/ISic000003,,,3000,Handnote para w/o links
-/inscription/ISic003409,,,3000,Deprecated record
-/inscription/ISic000590,,,3000,deprecated
+/inscription/ISic003409,,,5000,Deprecated record
+/inscription/ISic000590,,,5000,deprecated
 

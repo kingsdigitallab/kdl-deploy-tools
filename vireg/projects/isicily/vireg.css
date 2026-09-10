@@ -24,3 +24,9 @@ div.openseadragon-container > div:not(.openseadragon-canvas) {
 ul.qa-links {
     display: none !important;
 }
+
+/* expand detail so we can compare content */
+::details-content {
+  content-visibility: visible;
+}
+
