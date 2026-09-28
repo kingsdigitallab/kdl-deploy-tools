@@ -23,8 +23,11 @@ url,delay,waitFor,viewportHeight,comment
 /inscription/ISic000833,,,3000,Handnote para w/ links + variants
 /inscription/ISic000613,,,3000,Handnote w/o para      + variants
 /inscription/ISic001833,,,3000,Handnote w/ render issue; no types listed
-/inscription/ISic000612,,,3000,Handnote 
+/inscription/ISic000612,,,5000,Handnote 
 /inscription/ISic000003,,,3000,Handnote para w/o links
-/inscription/ISic003409,,,5000,Deprecated record
+/inscription/ISic003409,,,5000,Deprecated record w/ 1 replacement
+/inscription/ISic003446,,,5000,Deprecated record w/ 0 replacement
 /inscription/ISic000590,,,5000,deprecated
+/inscription/ISic001405,,,5000,Deprecated record w/ 3 replacements
+/inscription/ISic002729,,,6000,Bib ref without link (SEG)
 

@@ -30,3 +30,10 @@ ul.qa-links {
   content-visibility: visible;
 }
 
+/* Maplibre credits */
+.maplibregl-ctrl-attrib, .maplibregl-ctrl-scale {
+  visibility: hidden !important;;
+}
+
+
+
