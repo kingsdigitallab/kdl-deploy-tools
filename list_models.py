@@ -60,9 +60,9 @@ if 0:
 
 if IS_ER_API:
     # openai/er api
-    res_dic = call_json_api(f"{API_URL}/models", TOKEN, 1)
+    res_dic = call_json_api(f"{API_URL}/models", TOKEN, 0)
 
-    for model in res_dic:
+    for model in res_dic['data']:
         vision_status = 'VISION' if model["supports_vision"] else ''
         print(f'{model["name"]:<15} {model["backend_model"]:<30} {str(int(model["context_window"]/1024)):>6}k {vision_status:<6}')
 else:
